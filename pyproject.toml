@@ -1,0 +1,12 @@
+[project]
+name = "blog-webapp"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "django==6.0",
+    "django-htmx==1.27.0",
+    "django-template-partials==25.3",
+    "environs[django]>=14.5.0",
+]

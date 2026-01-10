@@ -1,0 +1,4 @@
+django==6.0
+django-htmx==1.27.0
+django-template-partials==25.3
+environs[django]>=14.5.0

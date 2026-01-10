@@ -1,0 +1,33 @@
+{% extends "layouts/main-layout.html" %}
+{% load static %}
+
+{% block body %}
+   <!-- Header/Banner -->
+   <div
+      class="header bg-theme-dark fixed z-999 flex h-14 w-full items-center justify-between px-5 text-lg text-white"
+   >
+      <div class="left-items">
+         <div class="write-blog-btn font-light">Some logo</div>
+      </div>
+
+      <div class="center-items">
+         <div class="write-blog-btn font-light">Something grand tbh</div>
+      </div>
+
+      <div class="right-items"></div>
+   </div>
+   <!-- Header/Banner -->
+
+   <!-- Left side bar -->
+   {% block left_sidebar %}
+   {% endblock left_sidebar %}
+   <!-- Left side bar -->
+   <!-- Right side bar -->
+   <div class="right-sidebar h-content fixed top-14 right-0 w-3/5">
+      <div
+         class="h-full w-full bg-cover"
+         style="background-image: url('{% static 'img/auth_bg.jpg' %}')"
+      ></div>
+   </div>
+   <!-- Right side bar -->
+{% endblock body %}

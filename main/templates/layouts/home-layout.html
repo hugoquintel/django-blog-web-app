@@ -1,0 +1,225 @@
+{% extends "layouts/main-layout.html" %}
+{% block title %}Home{% endblock title %}
+
+{% block body %}
+   <!-- Header/Banner -->
+   <div
+      class="header bg-theme-dark fixed z-999 flex h-14 w-full items-center justify-between px-5 text-lg text-white"
+   >
+      <div class="left-items">
+         {% if user.is_authenticated %}
+            <div class="write-blog-btn font-light">{{ user }}</div>
+         {% endif %}
+      </div>
+
+      <div class="center-items">
+         <div class="write-blog-btn font-light">Something grand tbh</div>
+      </div>
+
+      <div class="right-items flex space-x-5">
+         <button class="write-blog-btn hover:text-theme-base cursor-pointer">
+            <i class="fa-regular fa-pen-to-square"></i>Write
+         </button>
+         <button class="notification hover:text-theme-base cursor-pointer text-xl">
+            <i class="fa-regular fa-bell"></i>
+         </button>
+         <img
+            class="profile-btn hover:text-theme-base h-9 w-9 cursor-pointer rounded-full border"
+            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR132TBAD0-GhGhN8_2Xr-3obkFd4NzFbk6Hg&s"
+            alt="Profile picture"
+         />
+      </div>
+   </div>
+   <!-- Header/Banner -->
+
+   <!-- Left side bar -->
+   {% block left_sidebar %}
+      <div
+         class="left-sidebar h-content border-gray-light fixed top-14 left-0 flex w-80 flex-col justify-between border-r p-3"
+      >
+         <div class="search h-60">
+            <div class="search-bar">
+               <form
+                  action=""
+                  class="border-gray-base flex h-8 items-center justify-between rounded-full border"
+               >
+                  <input
+                     class="ml-3 h-full w-9/11 focus:outline-none"
+                     type="text"
+                     placeholder="Search"
+                  />
+                  <button class="mr-1 cursor-pointer text-xs hover:opacity-50">
+                     <i class="fa-solid fa-circle-xmark"></i>
+                  </button>
+                  <button
+                     class="hover:bg-gray-light border-gray-base h-full cursor-pointer rounded-r-full border-l px-1.5"
+                     type="submit"
+                  >
+                     <i class="fa-solid fa-magnifying-glass"></i>
+                  </button>
+               </form>
+            </div>
+            <ul
+               class="my-1 max-h-60 overflow-y-auto rounded-lg shadow-[0px_5px_15px_rgba(0,0,0,0.25)]"
+               role="list"
+            >
+               <li class="p-2">
+                  <a href="" class="hover:bg-gray-light flex rounded-lg p-1">
+                     <img
+                        class="border-gray-base h-10 w-10 rounded-full border"
+                        src="https://cdn.pixabay.com/photo/2024/05/26/10/15/bird-8788491_1280.jpg"
+                        alt=""
+                     />
+                     <div class="ml-3 overflow-hidden">
+                        <p class="line-clamp-1 text-sm font-medium text-black">
+                           Full name Fullasdsadsa name Full name Full name Full name
+                        </p>
+                        <p class="text-gray-dark line-clamp-1 text-sm">
+                           Heyo ajso asdadw bangalore asdsadsad
+                        </p>
+                     </div>
+                  </a>
+               </li>
+
+               <li class="p-2">
+                  <a href="" class="hover:bg-gray-light flex rounded-lg p-1">
+                     <img
+                        class="border-gray-base h-10 w-10 rounded-full border"
+                        src="https://cdn.pixabay.com/photo/2024/05/26/10/15/bird-8788491_1280.jpg"
+                        alt=""
+                     />
+                     <div class="ml-3 overflow-hidden">
+                        <p class="line-clamp-1 text-sm font-medium text-black">
+                           Full name Fullasdsadsa name Full name Full name Full name
+                        </p>
+                        <p class="text-gray-dark line-clamp-1 text-sm">
+                           Heyo ajso asdadw bangalore asdsadsad
+                        </p>
+                     </div>
+                  </a>
+               </li>
+            </ul>
+         </div>
+
+         <div class="utilities flex flex-col justify-between">
+            <a class="hover:bg-gray-light rounded-lg p-2 text-lg font-bold" href=""
+               ><i class="fa-solid fa-bookmark mr-2"></i>Saved posts</a
+            >
+            <a class="hover:bg-gray-light rounded-lg p-2 text-lg font-bold" href="">
+               <i class="fa-solid fa-heart mr-2"></i>Liked posts</a
+            >
+            <a class="hover:bg-gray-light rounded-lg p-2 text-lg font-bold" href=""
+               ><i class="fa-solid fa-people-group mr-2"></i>People</a
+            >
+            <a
+               class="hover:bg-gray-light flex items-center rounded-lg p-2 text-lg font-bold"
+               href=""
+            >
+               <i class="fa-solid fa-user mr-2"></i>Profile</a
+            >
+         </div>
+
+         <div class="log-out flex flex-col">
+            <a
+               hx-headers='{"x-csrftoken": "{{ csrf_token }}"}'
+               hx-post="{% url "user:sign-out" %}"
+               hx-push-url="true"
+               class="hover:bg-gray-light cursor-pointer rounded-lg p-2 text-lg font-bold text-red-700"
+            >
+               <i class="fa-solid fa-arrow-right-from-bracket mr-2"></i>Log out</a
+            >
+         </div>
+      </div>
+   {% endblock left_sidebar %}
+   <!-- Left side bar -->
+
+   <!-- Content -->
+   {% block content %}
+   {% endblock content %}
+   <!-- Content -->
+
+   <!-- Right side bar -->
+   {% block right_sidebar %}
+      <div
+         class="right-sidebar h-content border-gray-light fixed top-14 right-0 flex w-80 flex-col justify-between border-l p-3"
+      >
+         <div class="ads h-60">
+            <div class="ad">
+               <h1 class="text-xl font-bold">Some ad</h1>
+               <img
+                  class="rounded-lg"
+                  src="https://images.pexels.com/photos/1563356/pexels-photo-1563356.jpeg?cs=srgb&dl=pexels-thatguycraig000-1563356.jpg&fm=jpg"
+                  alt=""
+               />
+            </div>
+         </div>
+
+         <div class="followers min-h-40">
+            <h1 class="px-2">Your top followers:</h1>
+            <ul class="max-h-35 overflow-y-auto" role="list">
+               <li class="p-1">
+                  <a href="" class="hover:bg-gray-light flex rounded-lg p-1">
+                     <img
+                        class="border-gray-base h-10 w-10 rounded-full border"
+                        src="https://cdn.pixabay.com/photo/2024/05/26/10/15/bird-8788491_1280.jpg"
+                        alt=""
+                     />
+                     <div class="ml-3 overflow-hidden">
+                        <p class="text-sm font-medium text-black">Full name</p>
+                        <p class="text-gray-dark truncate text-sm">Username</p>
+                     </div>
+                  </a>
+               </li>
+
+               <li class="p-1">
+                  <a href="" class="hover:bg-gray-light flex rounded-lg p-1">
+                     <img
+                        class="border-gray-base h-10 w-10 rounded-full border"
+                        src="https://cdn.pixabay.com/photo/2024/05/26/10/15/bird-8788491_1280.jpg"
+                        alt=""
+                     />
+                     <div class="ml-3 overflow-hidden">
+                        <p class="text-sm font-medium text-black">Full name</p>
+                        <p class="text-gray-dark truncate text-sm">Username</p>
+                     </div>
+                  </a>
+               </li>
+            </ul>
+         </div>
+
+         <div class="followings min-h-40">
+            <h1 class="px-2">Your top followings:</h1>
+            <ul class="max-h-35 overflow-y-auto" role="list">
+               <li class="p-1">
+                  <a href="" class="hover:bg-gray-light flex rounded-lg p-1">
+                     <img
+                        class="border-gray-base h-10 w-10 rounded-full border"
+                        src="https://cdn.pixabay.com/photo/2024/05/26/10/15/bird-8788491_1280.jpg"
+                        alt=""
+                     />
+                     <div class="ml-3 overflow-hidden">
+                        <p class="text-sm font-medium text-black">Full name</p>
+                        <p class="text-gray-dark truncate text-sm">Username</p>
+                     </div>
+                  </a>
+               </li>
+
+               <li class="p-1">
+                  <a href="" class="hover:bg-gray-light flex rounded-lg p-1">
+                     <img
+                        class="border-gray-base h-10 w-10 rounded-full border"
+                        src="https://cdn.pixabay.com/photo/2024/05/26/10/15/bird-8788491_1280.jpg"
+                        alt=""
+                     />
+                     <div class="ml-3 overflow-hidden">
+                        <p class="text-sm font-medium text-black">Full name</p>
+                        <p class="text-gray-dark truncate text-sm">Username</p>
+                     </div>
+                  </a>
+               </li>
+            </ul>
+         </div>
+      </div>
+   {% endblock right_sidebar %}
+   <!-- Right side bar -->
+{% endblock body %}

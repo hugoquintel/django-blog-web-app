@@ -1,0 +1,62 @@
+{% extends "layouts/auth-layout.html" %}
+
+{% block left_sidebar %}
+   <div
+      class="left-sidebar min-h-content bg-theme-light relative top-14 left-0 flex w-2/5 flex-col items-center justify-center overflow-auto"
+   >
+      {% partialdef form inline %}
+         <div id="form" class="bg-theme-light flex w-6/10 flex-col justify-center space-y-2 py-6">
+            <h1 class="text-text-black mb-6 text-3xl font-extrabold">Create an account</h1>
+            <form
+               hx-post="{% url "user:sign-up" %}"
+               hx-target="#form"
+               hx-swap="outerHTML"
+               hx-push-url="true"
+               class="flex flex-col"
+            >
+               {% csrf_token %}
+               {% for field in form %}
+                  {% if field.errors %}
+                     <ul
+                        class="mb-1 list-inside list-disc rounded-sm bg-red-300 px-2 py-1 text-sm text-red-700"
+                     >
+                        {% for error in field.errors %}
+                           <li>{{ error }}</li>
+                        {% endfor %}
+                     </ul>
+                  {% endif %}
+                  <label for="{{ field.auto_id }}" class="font-semibold"
+                     >{{ field.label|title }}:</label
+                  >
+                  {{ field }}
+               {% endfor %}
+               <div class="show-password mb-3 flex items-center space-x-1 text-sm">
+                  <input type="checkbox" />
+                  <p>show password</p>
+               </div>
+
+               <input
+                  type="submit"
+                  value="Sign up"
+                  class="bg-theme-dark cursor-pointer self-center rounded-md p-2 text-white hover:opacity-(--hover-opacity)"
+               />
+            </form>
+
+            <div class="flex items-center justify-center text-sm">
+               <p>Already have an account?&nbsp;</p>
+               <a
+                  hx-get="{% url "user:sign-in" render_type="partial" %}"
+                  hx-target="#form"
+                  hx-swap="outerHTML"
+                  hx-push-url="true"
+                  class="text-theme cursor-pointer font-semibold underline"
+                  >Sign in here</a
+               >
+            </div>
+         </div>
+         <script>
+            document.title = "Sign up"
+         </script>
+      {% endpartialdef form %}
+   </div>
+{% endblock left_sidebar %}

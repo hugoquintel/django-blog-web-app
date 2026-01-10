@@ -1,0 +1,22 @@
+<!doctype html>
+{% load static %}
+{% load django_htmx %}
+<html lang="en">
+   <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="stylesheet" href="{% static "css/tailwind/output.css" %}" />
+      <link rel="stylesheet" href="{% static "css/fonts/fontawesome/css/all.min.css" %}" />
+      <link rel="stylesheet" href="{% static "css/fonts/font.css" %}" />
+      {% htmx_script %}
+      <script src="{% static 'js/htmxConfig.js' %}" async></script>
+      <script src="{% static 'js/showPassword.js' %}" async></script>
+      <title>{% block title %}{% endblock title %}</title>
+   </head>
+   <body>
+      <div class="wrapper flex">
+         {% block body %}
+         {% endblock body %}
+      </div>
+   </body>
+</html>

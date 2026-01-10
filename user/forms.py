@@ -1,0 +1,66 @@
+from django import forms
+from django.contrib.auth.models import User
+from user.validators import signin_validators, signup_validators
+
+
+# Form for signing in
+class SigninForm(forms.Form):
+    username = forms.CharField(
+        validators=signin_validators["username"],
+        widget=forms.TextInput(attrs={"class": "mb-6"}),
+    )
+    password = forms.CharField(widget=forms.PasswordInput(attrs={"class": "mb-2"}))
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.fields:
+            self.fields[f"{field}"].required = True
+            self.fields[f"{field}"].widget.attrs[
+                "class"
+            ] += " rounded-sm border px-2 py-1 focus:outline-0"
+
+    def clean(self):
+        cleaned_data = super().clean()
+        username = cleaned_data.get("username")
+        password = cleaned_data.get("password")
+        if User.objects.filter(username__iexact=username).exists():
+            user = User.objects.get(username=username)
+            if not user.check_password(password):
+                self.add_error("password", "The password you entered is incorrect.")
+        return cleaned_data
+
+
+# Form for signing up
+class SignupForm(forms.Form):
+    username = forms.CharField(
+        validators=signup_validators["username"],
+        widget=forms.TextInput(attrs={"class": "mb-6"}),
+    )
+    email = forms.CharField(
+        validators=signup_validators["email"],
+        widget=forms.EmailInput(attrs={"class": "mb-6"}),
+    )
+    password = forms.CharField(
+        validators=signup_validators["password"],
+        widget=forms.PasswordInput(attrs={"class": "mb-6"}),
+    )
+    confirm_password = forms.CharField(
+        widget=forms.PasswordInput(attrs={"class": "mb-2"}),
+        label="Re-type password",
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.fields:
+            self.fields[f"{field}"].required = True
+            self.fields[f"{field}"].widget.attrs[
+                "class"
+            ] += " rounded-sm border px-2 py-1 focus:outline-0"
+
+    def clean(self):
+        cleaned_data = super().clean()
+        password = cleaned_data.get("password")
+        confirm_password = self.cleaned_data.get('confirm_password')
+        if password != confirm_password:
+            self.add_error("confirm_password", "Passwords do not match.")
+        return cleaned_data

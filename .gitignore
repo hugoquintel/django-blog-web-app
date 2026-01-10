@@ -1,0 +1,27 @@
+# node packages
+node_modules/
+
+# tailwind output file
+main/static/css/tailwind/output.css
+
+# Django stuff:
+*.log
+db.sqlite3
+db.sqlite3-journal
+
+# misc
+.DS_Store
+
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Python Virtual environments
+.venv
+
+# environments
+.env

@@ -1,0 +1,15 @@
+@import 'tailwindcss';
+
+@theme {
+   --color-white: #fff;
+   --color-black: #0f172a;
+   --color-gray-light: #e5e7eb;
+   --color-gray-base: #9ca3af;
+   --color-gray-dark: #4b5563;
+   --color-theme-light: #93d7b7;
+   --color-theme-base: #44b78b;
+   --color-theme-dark: #0c4b33;
+   --spacing-content: calc(100vh - 3.5rem);
+   --hover-opacity: 0.85;
+}
+@custom-variant dark (&:where(.dark, .dark *));
