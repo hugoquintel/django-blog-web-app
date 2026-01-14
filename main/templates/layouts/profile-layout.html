@@ -1,0 +1,101 @@
+{% extends "layouts/main-layout.html" %}
+
+{% block body %}
+   <!-- Header/Banner -->
+   {% block header %}
+      <div
+         class="header bg-theme-dark fixed z-999 flex h-14 w-full items-center justify-between px-5 text-lg text-white"
+      >
+         <div class="left-items">
+            <div class="write-blog-btn font-light">Some logo</div>
+         </div>
+
+         <div class="center-items">
+            <div class="write-blog-btn font-light">Something grand tbh</div>
+         </div>
+
+         <div class="right-items flex space-x-5">
+            <button class="write-blog-btn hover:text-theme-base cursor-pointer">
+               <i class="fa-regular fa-pen-to-square"></i>Write
+            </button>
+            <button class="notification hover:text-theme-base cursor-pointer text-xl">
+               <i class="fa-regular fa-bell"></i>
+            </button>
+            <img
+               class="profile-btn hover:text-theme-base h-9 w-9 cursor-pointer rounded-full border"
+               src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR132TBAD0-GhGhN8_2Xr-3obkFd4NzFbk6Hg&s"
+               alt="Profile picture"
+            />
+         </div>
+      </div>
+   {% endblock header %}
+   <!-- Header/Banner -->
+
+   <!-- Left side bar -->
+   {% block left_sidebar %}
+      <div
+         class="left-sidebar h-content border-gray-light fixed top-14 left-0 flex w-90 flex-col space-y-5 overflow-auto border-r p-3"
+      >
+         <div class="bio border-gray-light border-b-2 wrap-break-word">
+            <h2 class="text-3xl font-extrabold">Intro</h2>
+            <h3 class="text-gray-dark mb-2 text-lg">{{ user }}</h3>
+            {% if profile.bio %}
+               <p class="mb-2">{{ profile.bio }}</p>
+            {% endif %}
+         </div>
+         <div class="flex flex-col justify-start space-y-3 wrap-break-word">
+            {% if profile.birthday %}
+               <div>
+                  <i
+                     class="fa-solid fa-cake-candles float-start mr-2 inline-block w-2/10 translate-y-1"
+                  ></i>
+                  <p class="inline-block w-9/10">{{ profile.birthday|date:"d F" }}</p>
+               </div>
+            {% endif %}
+
+            {% if profile.address %}
+               <div>
+                  <i
+                     class="fa-solid fa-location-dot float-start mr-2 inline-block w-2/10 translate-y-1"
+                  ></i>
+                  <p class="inline-block w-9/10">{{ profile.address }}</p>
+               </div>
+            {% endif %}
+
+            {% if profile.education %}
+               <div>
+                  <i
+                     class="fa-solid fa-graduation-cap float-start mr-2 inline-block w-2/10 translate-y-1"
+                  ></i>
+                  <p class="inline-block w-9/10">{{ profile.education }}</p>
+               </div>
+            {% endif %}
+
+            {% if profile.work %}
+               <div>
+                  <i
+                     class="fa-solid fa-briefcase float-start mr-2 inline-block w-2/10 translate-y-1"
+                  ></i>
+                  <p class="inline-block w-9/10">{{ profile.work }}</p>
+               </div>
+            {% endif %}
+
+            {% if profile.link %}
+               <div>
+                  <i class="fa-solid fa-link float-start mr-2 inline-block w-2/10 translate-y-1">
+                  </i>
+                  <a href="{{ profile.link }}" target="_blank" class="inline-block w-9/10 underline"
+                     >{{ profile.link }}</a
+                  >
+               </div>
+            {% endif %}
+         </div>
+      </div>
+   {% endblock left_sidebar %}
+   <!-- Left side bar -->
+
+   <!-- Content -->
+   {% block content %}
+   {% endblock content %}
+   <!-- Content -->
+{% endblock body %}

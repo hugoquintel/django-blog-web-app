@@ -9,14 +9,15 @@
       <link rel="stylesheet" href="{% static "css/fonts/fontawesome/css/all.min.css" %}" />
       <link rel="stylesheet" href="{% static "css/fonts/font.css" %}" />
       {% htmx_script %}
-      <script src="{% static 'js/htmxConfig.js' %}" async></script>
-      <script src="{% static 'js/showPassword.js' %}" async></script>
       <title>{% block title %}{% endblock title %}</title>
    </head>
-   <body>
+   <body hx-boost="true">
       <div class="wrapper flex">
          {% block body %}
          {% endblock body %}
       </div>
+      <script src="{% static 'js/htmxConfig.js' %}"></script>
+      <script src="{% static 'js/showPassword.js' %}"></script>
+      <script src="{% static 'js/previewImage.js' %}"></script>
    </body>
 </html>

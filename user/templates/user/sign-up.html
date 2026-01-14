@@ -1,4 +1,5 @@
 {% extends "layouts/auth-layout.html" %}
+{% block title %}Sign up{% endblock title %}
 
 {% block left_sidebar %}
    <div
@@ -8,22 +9,22 @@
          <div id="form" class="bg-theme-light flex w-6/10 flex-col justify-center space-y-2 py-6">
             <h1 class="text-text-black mb-6 text-3xl font-extrabold">Create an account</h1>
             <form
-               hx-post="{% url "user:sign-up" %}"
+               method="post"
+               action="{% url "user:sign-up" %}"
                hx-target="#form"
                hx-swap="outerHTML"
-               hx-push-url="true"
                class="flex flex-col"
             >
                {% csrf_token %}
                {% for field in form %}
                   {% if field.errors %}
-                     <ul
-                        class="mb-1 list-inside list-disc rounded-sm bg-red-300 px-2 py-1 text-sm text-red-700"
+                     <div
+                        class="mb-1 space-y-1.5 rounded-sm bg-red-300 px-2 py-1 font-bold text-red-700"
                      >
                         {% for error in field.errors %}
-                           <li>{{ error }}</li>
+                           <p>{{ error }}</p>
                         {% endfor %}
-                     </ul>
+                     </div>
                   {% endif %}
                   <label for="{{ field.auto_id }}" class="font-semibold"
                      >{{ field.label|title }}:</label
@@ -45,17 +46,16 @@
             <div class="flex items-center justify-center text-sm">
                <p>Already have an account?&nbsp;</p>
                <a
-                  hx-get="{% url "user:sign-in" render_type="partial" %}"
+                  href="{% url "user:sign-in" %}"
                   hx-target="#form"
                   hx-swap="outerHTML"
-                  hx-push-url="true"
-                  class="text-theme cursor-pointer font-semibold underline"
+                  class="text-theme font-semibold underline"
                   >Sign in here</a
                >
             </div>
          </div>
-         <script>
-            document.title = "Sign up"
+         <script class="no">
+            document.title = 'Sign up';
          </script>
       {% endpartialdef form %}
    </div>

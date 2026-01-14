@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "django_htmx",
     "template_partials",
+    "django_cleanup.apps.CleanupConfig",
     # own
     "user.apps.UserConfig",
 ]

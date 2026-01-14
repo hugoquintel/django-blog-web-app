@@ -8,6 +8,7 @@ main/static/css/tailwind/output.css
 *.log
 db.sqlite3
 db.sqlite3-journal
+media/
 
 # misc
 .DS_Store
@@ -23,5 +24,5 @@ wheels/
 # Python Virtual environments
 .venv
 
-# environments
+# environment variables
 .env

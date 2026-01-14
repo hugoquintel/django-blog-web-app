@@ -1,3 +1,5 @@
+// Fix this
+
 function showHidePasswords() {
    const passwordEles = document.querySelectorAll('input[type="password"]');
    const checkbox = document.querySelector('input[type="checkbox"]');

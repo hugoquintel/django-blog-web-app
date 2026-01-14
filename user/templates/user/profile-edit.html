@@ -1,0 +1,183 @@
+{% extends "layouts/profile-layout.html" %}
+{% load static %}
+
+{% block content %}
+   <!-- Content -->
+   <div class="content ml-90 pt-15">
+      <div class="mb-5 flex items-center justify-center text-3xl">
+         <a href="{% url "user:index" %}" class="text-gray-dark">
+            <i class="fa-solid fa-arrow-left p-1 hover:underline"></i>
+         </a>
+         <h1 class="w-9/10 text-center font-extrabold">Edit profile</h1>
+      </div>
+      <div class="flex w-full items-center justify-center">
+         <form
+            method="post"
+            action="{% url "user:edit-profile" %}"
+            enctype="multipart/form-data"
+            hx-swap="show:no-scroll"
+            class="detail flex w-8/10 justify-start"
+         >
+            {% csrf_token %}
+            <div class="profile-img flex flex-col items-center justify-start space-x-15">
+               <span class="block h-37 w-37">
+                  <img
+                     id="profile_picture"
+                     class="border-gray-base size-full rounded-full border"
+                     {% if user.profile.picture %}
+                        src={{ user.profile.picture.url }}
+                     {% else %}
+                        src="{% static "img/stock_pfp.jpg" %}"
+                     {% endif %}
+                     alt=""
+                  />
+               </span>
+               <label
+                  id="upload_btn"
+                  for="{{ form.picture.auto_id }}"
+                  class="border-gray-light bg-theme-light text-gray-dark mt-2.5 w-31 cursor-pointer truncate rounded-sm border p-1.5 text-sm font-semibold hover:opacity-(--hover-opacity)"
+               >
+                  <i class="fa-solid fa-upload"></i>
+                  Upload image
+               </label>
+               {{ form.picture }}
+            </div>
+
+            <div class="profile-detail border-gray-light flex flex-col items-start space-y-4">
+               {% if message %}
+                  <span
+                     class="bg-theme-light text-theme-dark w-full rounded-sm px-3 py-1.5 text-lg font-bold"
+                  >
+                     <p>{{ message }}<i class="fa-solid fa-circle-check ml-1"></i></p>
+                  </span>
+               {% endif %}
+
+               <div class="flex space-x-5">
+                  <span>
+                     {% if form.first_name.errors %}
+                        <div
+                           class="mb-1 space-y-1.5 rounded-sm bg-red-300 px-2 py-1 font-bold text-red-700"
+                        >
+                           {% for error in form.first_name.errors %}
+                              <p>{{ error }}</p>
+                           {% endfor %}
+                        </div>
+                     {% endif %}
+                     <label for="{{ form.first_name.auto_id }}" class="block font-semibold"
+                        >First name</label
+                     >
+                     {{ form.first_name }}
+                  </span>
+                  <span>
+                     {% if form.last_name.errors %}
+                        <div
+                           class="mb-1 space-y-1.5 rounded-sm bg-red-300 px-2 py-1 font-bold text-red-700"
+                        >
+                           {% for error in form.last_name.errors %}
+                              <p>{{ error }}</p>
+                           {% endfor %}
+                        </div>
+                     {% endif %}
+                     <label for="{{ form.last_name.auto_id }}" class="block font-semibold"
+                        >Last name</label
+                     >
+                     {{ form.last_name }}
+                  </span>
+               </div>
+
+               <span>
+                  {% if form.birthday.errors %}
+                     <div
+                        class="mb-1 space-y-1.5 rounded-sm bg-red-300 px-2 py-1 font-bold text-red-700"
+                     >
+                        {% for error in form.birthday.errors %}
+                           <p>{{ error }}</p>
+                        {% endfor %}
+                     </div>
+                  {% endif %}
+                  <label for="{{ form.birthday.auto_id }}" class="block font-semibold"
+                     >Birthday</label
+                  >
+                  {{ form.birthday }}
+               </span>
+
+               <span class="w-full">
+                  {% if form.address.errors %}
+                     <div
+                        class="mb-1 space-y-1.5 rounded-sm bg-red-300 px-2 py-1 font-bold text-red-700"
+                     >
+                        {% for error in form.address.errors %}
+                           <p>{{ error }}</p>
+                        {% endfor %}
+                     </div>
+                  {% endif %}
+                  <label for="{{ form.address.auto_id }}" class="block font-semibold"
+                     >Address:</label
+                  >
+                  {{ form.address }}
+               </span>
+               <span class="w-full">
+                  {% if form.education.errors %}
+                     <div
+                        class="mb-1 space-y-1.5 rounded-sm bg-red-300 px-2 py-1 font-bold text-red-700"
+                     >
+                        {% for error in form.education.errors %}
+                           <p>{{ error }}</p>
+                        {% endfor %}
+                     </div>
+                  {% endif %}
+                  <label for="{{ form.education.auto_id }}" class="block font-semibold"
+                     >Education:</label
+                  >
+                  {{ form.education }}
+               </span>
+               <span class="w-full">
+                  {% if form.work.errors %}
+                     <div
+                        class="mb-1 space-y-1.5 rounded-sm bg-red-300 px-2 py-1 font-bold text-red-700"
+                     >
+                        {% for error in form.work.errors %}
+                           <p>{{ error }}</p>
+                        {% endfor %}
+                     </div>
+                  {% endif %}
+                  <label for="{{ form.work.auto_id }}" class="block font-semibold">Work:</label>
+                  {{ form.work }}
+               </span>
+               <span class="w-full">
+                  {% if form.link.errors %}
+                     <div
+                        class="mb-1 space-y-1.5 rounded-sm bg-red-300 px-2 py-1 font-bold text-red-700"
+                     >
+                        {% for error in form.link.errors %}
+                           <p>{{ error }}</p>
+                        {% endfor %}
+                     </div>
+                  {% endif %}
+                  <label for="{{ form.link.auto_id }}" class="block font-semibold">Link:</label>
+                  {{ form.link }}
+               </span>
+               <span class="w-full">
+                  {% if form.bio.errors %}
+                     <div
+                        class="mb-1 space-y-1.5 rounded-sm bg-red-300 px-2 py-1 font-bold text-red-700"
+                     >
+                        {% for error in form.bio.errors %}
+                           <p>{{ error }}</p>
+                        {% endfor %}
+                     </div>
+                  {% endif %}
+                  <label for="{{ form.bio.auto_id }}" class="block font-semibold">Bio:</label>
+                  {{ form.bio }}
+               </span>
+               <input
+                  type="submit"
+                  value="Save"
+                  class="bg-theme-base cursor-pointer rounded-md px-3 py-1.5 text-white hover:opacity-85"
+               />
+            </div>
+         </form>
+      </div>
+   </div>
+   <!-- Content -->
+{% endblock content %}

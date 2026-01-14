@@ -1,6 +1,17 @@
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
-from django.core.validators import RegexValidator, EmailValidator, MinLengthValidator
+from dateutil.relativedelta import relativedelta
+from django.utils import timezone
+from django.core.validators import (
+    RegexValidator,
+    EmailValidator,
+    MinLengthValidator,
+    MaxLengthValidator,
+    URLValidator,
+)
+
+from datetime import datetime
+from profanity_check import predict
 
 
 # Sign in validators
@@ -77,8 +88,50 @@ PasswordLengthValidator = MinLengthValidator(
     8, message="Password must be at least 8 characters long."
 )
 
+
+def ProfanityValidator(value):
+    if predict([value]).all():
+        raise ValidationError("Inappropriate words detected, try again.")
+
+
 signup_validators = {
-    "username": [ValidCharacters, ForbiddenUsers, UsernameLengthValidator, UniqueUser],
-    "email": [ValidEmail, UniqueEmail],
-    "password": [ValidPassword, PasswordLengthValidator],
+    "username": [
+        ValidCharacters,
+        ForbiddenUsers,
+        UsernameLengthValidator,
+        UniqueUser,
+        ProfanityValidator,
+    ],
+    "email": [ValidEmail, UniqueEmail, ProfanityValidator],
+    "password": [ValidPassword, PasswordLengthValidator, ProfanityValidator],
+}
+
+
+# Edit profile validators
+
+NameLengthValidator = MaxLengthValidator(50, message="50 characters max")
+InfoLengthValidator = MaxLengthValidator(100, message="100 characters max")
+BioLengthValidator = MaxLengthValidator(200, message="200 characters max")
+LinkValidator = URLValidator(message="Invalid link")
+
+
+def DateValidator(value):
+    start_date = timezone.now().date()
+    end_date = datetime.strptime(value, "%Y-%m-%d").date()
+    year_diff = relativedelta(start_date, end_date).years
+    if year_diff <= 0:
+        raise ValidationError("Your birthday is invalid.")
+    if year_diff > 150:
+        raise ValidationError("The age limit is 150.")
+
+
+edit_profile_validators = {
+    "first_name": [NameLengthValidator, ProfanityValidator],
+    "last_name": [NameLengthValidator, ProfanityValidator],
+    "birthday": [DateValidator],
+    "address": [InfoLengthValidator, ProfanityValidator],
+    "education": [InfoLengthValidator, ProfanityValidator],
+    "work": [InfoLengthValidator, ProfanityValidator],
+    "link": [InfoLengthValidator, LinkValidator, ProfanityValidator],
+    "bio": [BioLengthValidator, ProfanityValidator],
 }

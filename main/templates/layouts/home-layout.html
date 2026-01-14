@@ -1,35 +1,36 @@
 {% extends "layouts/main-layout.html" %}
 {% block title %}Home{% endblock title %}
-
 {% block body %}
    <!-- Header/Banner -->
-   <div
-      class="header bg-theme-dark fixed z-999 flex h-14 w-full items-center justify-between px-5 text-lg text-white"
-   >
-      <div class="left-items">
-         {% if user.is_authenticated %}
-            <div class="write-blog-btn font-light">{{ user }}</div>
-         {% endif %}
-      </div>
+   {% block header %}
+      <div
+         class="header bg-theme-dark fixed z-999 flex h-14 w-full items-center justify-between px-5 text-lg text-white"
+      >
+         <div class="left-items">
+            {% if user.is_authenticated %}
+               <div class="write-blog-btn font-light">{{ user }}</div>
+            {% endif %}
+         </div>
 
-      <div class="center-items">
-         <div class="write-blog-btn font-light">Something grand tbh</div>
-      </div>
+         <div class="center-items">
+            <div class="write-blog-btn font-light">Something grand tbh</div>
+         </div>
 
-      <div class="right-items flex space-x-5">
-         <button class="write-blog-btn hover:text-theme-base cursor-pointer">
-            <i class="fa-regular fa-pen-to-square"></i>Write
-         </button>
-         <button class="notification hover:text-theme-base cursor-pointer text-xl">
-            <i class="fa-regular fa-bell"></i>
-         </button>
-         <img
-            class="profile-btn hover:text-theme-base h-9 w-9 cursor-pointer rounded-full border"
-            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR132TBAD0-GhGhN8_2Xr-3obkFd4NzFbk6Hg&s"
-            alt="Profile picture"
-         />
+         <div class="right-items flex space-x-5">
+            <button class="write-blog-btn hover:text-theme-base cursor-pointer">
+               <i class="fa-regular fa-pen-to-square"></i>Write
+            </button>
+            <button class="notification hover:text-theme-base cursor-pointer text-xl">
+               <i class="fa-regular fa-bell"></i>
+            </button>
+            <img
+               class="profile-btn hover:text-theme-base h-9 w-9 cursor-pointer rounded-full border"
+               src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR132TBAD0-GhGhN8_2Xr-3obkFd4NzFbk6Hg&s"
+               alt="Profile picture"
+            />
+         </div>
       </div>
-   </div>
+   {% endblock header %}
    <!-- Header/Banner -->
 
    <!-- Left side bar -->
