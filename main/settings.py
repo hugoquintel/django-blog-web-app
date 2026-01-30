@@ -42,10 +42,12 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django_htmx",
-    "template_partials",
+    "django_cotton",
     "django_cleanup.apps.CleanupConfig",
+    "widget_tweaks",
     # own
     "user.apps.UserConfig",
+    "blog.apps.BlogConfig",
 ]
 
 MIDDLEWARE = [
@@ -71,8 +73,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
-            ],
-            "builtins": ["template_partials.templatetags.partials"],
+            ]
         },
     },
 ]
@@ -125,8 +126,13 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
-STATIC_URL = "static/"
+STATIC_URL = "/static/"
+STATIC_ROOT = BASE_DIR / "assets"
 STATICFILES_DIRS = [BASE_DIR / "main/static"]
 
 MEDIA_URL = "media/"
 MEDIA_ROOT = BASE_DIR / "media"
+
+# cotton config
+COTTON_DIR = "components"
+COTTON_SNAKE_CASED_NAMES = False

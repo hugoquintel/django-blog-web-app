@@ -4,7 +4,7 @@
     "tailwindcss": "^4.1.18"
   },
   "scripts": {
-    "watch:css": "npx @tailwindcss/cli -i ./main/static/css/tailwind/input.css -o ./main/static/css/tailwind/output.css --watch"
+    "start": "npx @tailwindcss/cli -i ./main/static/css/tailwind/input.css -o ./main/static/css/tailwind/output.css --watch"
   },
   "devDependencies": {
     "prettier": "^3.7.4",

@@ -1,4 +1,6 @@
 {% extends "layouts/auth-layout.html" %}
+{% load widget_tweaks %}
+
 {% block title %}Sign in{% endblock title %}
 
 {% block left_sidebar %}
@@ -8,15 +10,16 @@
       {% partialdef form inline %}
          <div id="form" class="bg-theme-light flex w-6/10 flex-col justify-center space-y-2 py-6">
             <h1 class="text-text-black mb-6 text-3xl font-extrabold">Sign in to your account</h1>
-            {{ test }}
             <form
                method="post"
                action="{% url "user:sign-in" %}"
                hx-target="#form"
                hx-swap="outerHTML"
+               x-data="{showPassword:false}"
                class="flex flex-col"
             >
                {% csrf_token %}
+
                {% if messages %}
                   {% for message in messages %}
                      <span
@@ -26,31 +29,29 @@
                      </span>
                   {% endfor %}
                {% endif %}
-               {% for field in form %}
-                  {% if field.errors %}
-                     <div
-                        class="mb-1 space-y-1.5 rounded-sm bg-red-300 px-2 py-1 font-bold text-red-700"
-                     >
-                        {% for error in field.errors %}
-                           <p>{{ error }}</p>
-                        {% endfor %}
-                     </div>
-                  {% endif %}
-                  <label for="{{ field.auto_id }}" class="font-semibold"
-                     >{{ field.label|title }}:</label
-                  >
-                  {{ field }}
-               {% endfor %}
-               <div class="show-password mb-3 flex items-center space-x-1 text-sm">
-                  <input type="checkbox" />
-                  <p>show password</p>
+
+               <c-error :field="form.username" />
+               <label for="{{ form.username.auto_id }}" class="font-semibold">Username:</label>
+               {% render_field form.username class+="mb-6" %}
+
+               <c-error :field="form.password" />
+               <label for="{{ form.password.auto_id }}" class="font-semibold">Password:</label>
+               {% render_field form.password ::type="showPassword?`text`:`password`" class+="mb-2" %}
+
+               <div class="mb-3 flex items-center space-x-1 text-sm">
+                  <input id="show-password" type="checkbox" x-model="showPassword" />
+                  <label for="show-password">show password</label>
                </div>
 
-               <input
+               <c-button
                   type="submit"
-                  value="Sign in"
-                  class="bg-theme-dark cursor-pointer self-center rounded-md p-2 text-white hover:opacity-(--hover-opacity)"
-               />
+                  bg-color="bg-theme-dark"
+                  text-color="text-white"
+                  font-size="text-base"
+                  extra-classes="self-center"
+               >
+                  Sign in
+               </c-button>
             </form>
 
             <div class="flex items-center justify-center text-sm">
@@ -63,10 +64,11 @@
                   >Sign up here</a
                >
             </div>
+
+            <script>
+               document.title = 'Signin';
+            </script>
          </div>
-         <script class="no">
-            document.title = 'Sign in';
-         </script>
       {% endpartialdef form %}
    </div>
 {% endblock left_sidebar %}

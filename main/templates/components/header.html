@@ -1,0 +1,31 @@
+{% load static %}
+
+<div
+   class="header bg-theme-dark fixed z-999 flex h-14 w-full items-center justify-between px-5 text-lg text-white"
+>
+   <div class="">
+      <div class="write-blog-btn font-light">Some logo</div>
+   </div>
+
+   <div class="">
+      <div class="write-blog-btn font-light">Something grand tbh</div>
+   </div>
+
+   <div class="flex items-center space-x-3">
+      <a href="{% url "blog:create" %}" class="hover:text-theme-base cursor-pointer">
+         <i class="fa-regular fa-pen-to-square"></i>Write
+      </a>
+      <button class="hover:text-theme-base cursor-pointer">
+         <i class="fa-regular fa-bell"></i>
+      </button>
+      <img
+         class="profile-btn hover:text-theme-base h-9 w-9 cursor-pointer rounded-full border-2"
+         {% if request.user.profile.picture %}
+            src="{{ request.user.profile.picture.url }}"
+         {% else %}
+            src= {% static "img/stock_pfp.jpg" %}
+         {% endif %}
+         alt="Profile picture"
+      />
+   </div>
+</div>

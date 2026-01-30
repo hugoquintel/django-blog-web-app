@@ -21,14 +21,14 @@ def signin_view(request, render_type="partial"):
             password = form.cleaned_data.get("password")
             user = authenticate(username=username, password=password)
             first_login = user.last_login is None
-
             login(request, user)
-            response = HttpResponse()
-            if first_login:
-                response["HX-Location"] = reverse("user:edit-profile")
-            else:
-                response["HX-Location"] = reverse("user:index")
-            return response
+
+            headers = {
+                "HX-Location": reverse(
+                    "user:edit-profile" if first_login else "blog:index"
+                )
+            }
+            return HttpResponse(headers=headers)
     else:
         form = SigninForm()
     context = {"form": form}
@@ -67,11 +67,10 @@ def signup_view(request, render_type="partial"):
 def signout_view(request):
     if request.method == "POST":
         logout(request)
-        response = HttpResponse()
-        response["HX-Location"] = reverse(
-            "user:sign-in", kwargs={"render_type": "full"}
-        )
-        return response
+        headers = {
+            "HX-Location": reverse("user:sign-in", kwargs={"render_type": "full"})
+        }
+        return HttpResponse(headers=headers)
 
 
 @login_required(login_url=reverse_lazy("user:sign-in"))
@@ -87,13 +86,8 @@ def edit_profile_view(request):
             if not profile.birthday:
                 profile.birthday = None
             context["message"] = "Profile updated!"
-
             profile.save()
     else:
         form = EditProfileForm(instance=profile)
     context["form"] = form
     return render(request, template, context)
-
-
-def index_view(request):
-    return render(request, "user/index.html")

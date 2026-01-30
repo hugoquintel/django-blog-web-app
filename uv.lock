@@ -32,8 +32,9 @@ dependencies = [
     { name = "alt-profanity-check" },
     { name = "django" },
     { name = "django-cleanup" },
+    { name = "django-cotton" },
     { name = "django-htmx" },
-    { name = "django-template-partials" },
+    { name = "django-widget-tweaks" },
     { name = "environs", extra = ["django"] },
     { name = "pillow" },
     { name = "python-dateutil" },
@@ -44,8 +45,9 @@ requires-dist = [
     { name = "alt-profanity-check", specifier = ">=1.7.2" },
     { name = "django", specifier = "==6.0" },
     { name = "django-cleanup", specifier = ">=9.0.0" },
+    { name = "django-cotton", specifier = ">=2.6.1" },
     { name = "django-htmx", specifier = "==1.27.0" },
-    { name = "django-template-partials", specifier = "==25.3" },
+    { name = "django-widget-tweaks", specifier = ">=1.5.1" },
     { name = "environs", extras = ["django"], specifier = ">=14.5.0" },
     { name = "pillow", specifier = ">=12.1.0" },
     { name = "python-dateutil", specifier = ">=2.9.0.post0" },
@@ -105,6 +107,18 @@ wheels = [
 ]
 
 [[package]]
+name = "django-cotton"
+version = "2.6.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "django" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/11/c1/0df4b01255626897f5e74bdcef407ba88753ca92898c912caf2f9e73ba33/django_cotton-2.6.1.tar.gz", hash = "sha256:bedfa4561e2505fca5b88396acb9bdfaea85167eeef11813676fedab45906088", size = 31147, upload-time = "2026-01-13T12:06:00.142Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/3d/d2/dea85f1931de0b2da4746f6ad669c7da1f5c8569bee144fe6620c8d98d61/django_cotton-2.6.1-py3-none-any.whl", hash = "sha256:775dda0336c08d33a6daf10557eb261746b1b8e5f260b669cc6b37115571cb08", size = 30563, upload-time = "2026-01-13T12:05:59.162Z" },
+]
+
+[[package]]
 name = "django-htmx"
 version = "1.27.0"
 source = { registry = "https://pypi.org/simple" }
@@ -118,15 +132,15 @@ wheels = [
 ]
 
 [[package]]
-name = "django-template-partials"
-version = "25.3"
+name = "django-widget-tweaks"
+version = "1.5.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "django" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/b0/2e/957ee4a6ee0a7d46a18676ba8b01d762ef89d00b7769cc532853f9f989e1/django_template_partials-25.3.tar.gz", hash = "sha256:6d11f7bb049ce3032e6fe3331137b771e34239ce1af18c55ef6a9b667cf2ef36", size = 18052, upload-time = "2025-11-14T08:27:21.917Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/01/6d/d1b5a3ae3bccfee96e10315373298cea51e5e0d6853d022181b7b0861a4d/django_widget_tweaks-1.5.1.tar.gz", hash = "sha256:084acc9eeb5a3208f2670522de6284287973e54d54488ce6d402f4b99bc5f452", size = 16233, upload-time = "2026-01-02T12:46:28.907Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/9b/9d/48f8721e48b938ca2e2dde577986624543be6ff9bdccac20ccb747be4287/django_template_partials-25.3-py2.py3-none-any.whl", hash = "sha256:a19334934cf40e4e1218802a4ddfdf22b8f78cc5a0b8c75a18b97e6ea4f3c108", size = 9702, upload-time = "2025-11-14T08:27:20.243Z" },
+    { url = "https://files.pythonhosted.org/packages/64/6a/ad176284371005426b9a1c424e6cd77a9018ab1b17dc23948bfbeb2f6a21/django_widget_tweaks-1.5.1-py3-none-any.whl", hash = "sha256:3f5080f8365740fc1c14607498c975cbfed896dd0c40e1b563095716ee31e3b5", size = 9634, upload-time = "2026-01-02T12:46:02.18Z" },
 ]
 
 [[package]]

@@ -1,0 +1,12 @@
+<div
+   x-data="{message: $el}"
+   class="border-theme-base bg-theme-light text-theme-dark mb-8 flex w-fit rounded-sm border-l-6 p-1.5 text-lg font-bold shadow-sm"
+>
+   <p class="mr-4">{{ message }}</p>
+   <span
+      @click="message.remove()"
+      class="flex cursor-pointer items-center justify-center p-1 hover:opacity-50"
+   >
+      <i class="fa-solid fa-xmark"></i>
+   </span>
+</div>

@@ -1,0 +1,63 @@
+{% load widget_tweaks %}
+
+<div
+   x-data="{index: '{{ index }}', 
+            src: '//:0', 
+            file: '', 
+            show: false,
+            deletePicture: false,
+            isDeleted: false}"
+   {% if picture %}
+      x-init="src = '{{ picture.url }}'; show=true;"
+   {% endif %}
+   x-show="!isDeleted"
+   x-transition
+   class="border-gray-light flex flex-col space-y-3 border-b"
+>
+   {{ form.id }}
+   <c-button
+      tag="label"
+      for="{{ form.DELETE.auto_id }}"
+      bg-color="bg-red-400"
+      text-color="text-white"
+      extra-classes="self-end"
+   >
+      <i class="fa-regular fa-trash-can"></i>
+      Delete section
+   </c-button>
+
+   {% render_field form.DELETE x-model="isDeleted" class="hidden" %}
+   <input type="hidden" name="delete_ids" :value="isDeleted ? index : ``" />
+
+   <div class="w-full space-y-3 space-x-3">
+      <c-button
+         tag="label"
+         for="{{ form.picture.auto_id }}"
+         bg-color="bg-theme-light"
+         text-color="text-gray-dark"
+         extra-classes="font-semibold inline-block"
+      >
+         <i class="fa-solid fa-upload"></i>
+         Upload image
+      </c-button>
+
+      <img x-ref="picture" :src="src" alt="" class="mx-auto rounded-sm" />
+      {% render_field form.picture x-ref="pictureInput" x-show="show" @change="deletePicture = false; file = $el.files[0]; if (file) {src = URL.createObjectURL(file); show=true; $nextTick(() => { URL.revokeObjectURL(src) });} " %}
+      {% render_field form.picture_title x-ref="pictureTitle" x-show="show" %}
+
+      <c-button
+         bg-color="bg-orange-400"
+         text-color="text-white"
+         extra-classes="float-end"
+         :x-attrs="{ 'x-show': 'show' }"
+         :x-events="{ '@click': 'src=`//:0`;deletePicture=true;$refs.pictureInput.value=``;$refs.pictureTitle.value=``;show=false;' }"
+      >
+         Delete picture
+      </c-button>
+      {% render_field form.picture_delete x-ref="deletePicture" ::checked="deletePicture" %}
+   </div>
+   <c-error :field="form.title" />
+   {% render_field form.title ::required="!isDeleted" %}
+   <c-error :field="form.content" />
+   {% render_field form.content x-autosize="" ::required="!isDeleted" %}
+</div>

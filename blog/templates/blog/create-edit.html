@@ -1,0 +1,92 @@
+{% extends "layouts/profile-layout.html" %}
+{% load widget_tweaks %}
+
+{% block content %}
+   <!-- Content -->
+   <div class="content mb-2 ml-90 w-full pt-25">
+      <div class="mb-5 flex items-center justify-center text-3xl">
+         <a href="" class="text-gray-dark">
+            <i class="fa-solid fa-arrow-left p-1 hover:underline"></i>
+         </a>
+         <h1 class="w-9/10 text-center font-extrabold">
+            {% if blog_id %}
+               Edit your blog
+            {% else %}
+               Write your blog
+            {% endif %}
+         </h1>
+      </div>
+
+      <div
+         x-data="{totalForm: {{ formset_blog_sections|length }},
+                  get blogSectionForm() {
+                     const emptyForm = $refs.emptyForm.cloneNode(true);
+                     emptyForm.innerHTML = emptyForm.innerHTML.replaceAll('__prefix__', this.totalForm);
+                     return emptyForm.firstElementChild; }}"
+      >
+         <form
+            method="post"
+            {% if blog_id %}
+               action="{% url "blog:edit" blog_id=blog_id %}"
+            {% else %}
+               action="{% url "blog:create" %}"
+            {% endif %}
+            enctype="multipart/form-data"
+            hx-target="this"
+            hx-push-url="false"
+            class="flex w-full flex-col px-10"
+         >
+            {% partialdef form inline %}
+               {% if message %}
+                  <c-message message="{{ message }}" />
+               {% endif %}
+               {% csrf_token %}
+               <div class="flex w-full flex-col items-start space-y-4">
+                  <div class="mb-15 w-full space-y-3">
+                     <c-error :field="form_blog.title" />
+                     {% render_field form_blog.title %}
+                     <c-error :field="form_blog.description" />
+                     {% render_field form_blog.description x-autosize="" %}
+                  </div>
+                  <div x-ref="sections" id="sections" class="w-full space-y-3">
+                     {% render_field management_form.TOTAL_FORMS x-model="totalForm" %}
+                     {% render_field management_form.INITIAL_FORMS %}
+                     {% render_field management_form.MIN_NUM_FORMS %}
+                     {% render_field management_form.MAX_NUM_FORMS %}
+
+                     {% for form_section in formset_blog_sections %}
+                        {% if forloop.counter0 in delete_ids %}
+                           {% render_field form_section.DELETE checked="checked" class="hidden" %}
+                           <input type="hidden" name="delete_ids" value="{{ forloop.counter0 }}" />
+                        {% else %}
+                           <c-blog-section-form
+                              :form="form_section"
+                              :index="forloop.counter0"
+                              :picture="form_section.instance.picture"
+                           />
+                        {% endif %}
+                     {% endfor %}
+                  </div>
+
+                  <c-button
+                     bg-color="bg-blue-400"
+                     text-color="text-white"
+                     extra-classes="self-end"
+                     :x-events="{ '@click': '$refs.sections.append(blogSectionForm);totalForm++;' }"
+                  >
+                     <i class="fa-solid fa-plus"></i> Add section
+                  </c-button>
+
+                  <c-button type="submit" bg-color="bg-theme-base" text-color="text-white"
+                     >Save
+                  </c-button>
+               </div>
+            {% endpartialdef form %}
+         </form>
+         <span id="empty-section" x-ref="emptyForm" class="hidden">
+            <c-blog-section-form :form="empty_form" index="__prefix__" />
+         </span>
+      </div>
+   </div>
+   <!-- Content -->
+{% endblock content %}

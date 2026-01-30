@@ -1,11 +1,5 @@
 from django.urls import path
-from user.views import (
-    signin_view,
-    signup_view,
-    signout_view,
-    edit_profile_view,
-    index_view,
-)
+from user.views import signin_view, signup_view, signout_view, edit_profile_view
 
 app_name = "user"
 urlpatterns = [
@@ -15,5 +9,4 @@ urlpatterns = [
     path("sign-up/<str:render_type>", signup_view, name="sign-up"),
     path("sign-out/", signout_view, name="sign-out"),
     path("edit-profile/", edit_profile_view, name="edit-profile"),
-    path("index/", index_view, name="index"),
 ]

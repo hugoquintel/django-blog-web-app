@@ -103,13 +103,13 @@ signup_validators = {
         ProfanityValidator,
     ],
     "email": [ValidEmail, UniqueEmail, ProfanityValidator],
-    "password": [ValidPassword, PasswordLengthValidator, ProfanityValidator],
+    "password": [ValidPassword, PasswordLengthValidator],
 }
 
 
 # Edit profile validators
 
-NameLengthValidator = MaxLengthValidator(50, message="50 characters max")
+NameLengthValidator = MaxLengthValidator(25, message="25 characters max")
 InfoLengthValidator = MaxLengthValidator(100, message="100 characters max")
 BioLengthValidator = MaxLengthValidator(200, message="200 characters max")
 LinkValidator = URLValidator(message="Invalid link")

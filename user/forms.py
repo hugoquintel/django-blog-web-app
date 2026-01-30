@@ -12,16 +12,16 @@ from user.validators import (
 class SigninForm(forms.Form):
     username = forms.CharField(
         validators=signin_validators["username"],
-        widget=forms.TextInput(attrs={"class": "mb-6"}),
+        widget=forms.TextInput(),
     )
-    password = forms.CharField(widget=forms.PasswordInput(attrs={"class": "mb-2"}))
+    password = forms.CharField(widget=forms.PasswordInput())
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for field in self.fields:
             self.fields[f"{field}"].required = True
-            self.fields[f"{field}"].widget.attrs["class"] += (
-                " rounded-sm border px-2 py-1 focus:outline-0"
+            self.fields[f"{field}"].widget.attrs["class"] = (
+                "rounded-sm border px-2 py-1 focus:outline-0"
             )
 
     def clean(self):
@@ -39,27 +39,24 @@ class SigninForm(forms.Form):
 class SignupForm(forms.Form):
     username = forms.CharField(
         validators=signup_validators["username"],
-        widget=forms.TextInput(attrs={"class": "mb-6"}),
+        widget=forms.TextInput(),
     )
     email = forms.CharField(
         validators=signup_validators["email"],
-        widget=forms.EmailInput(attrs={"class": "mb-6"}),
+        widget=forms.EmailInput(),
     )
     password = forms.CharField(
         validators=signup_validators["password"],
-        widget=forms.PasswordInput(attrs={"class": "mb-6"}),
+        widget=forms.PasswordInput(),
     )
-    confirm_password = forms.CharField(
-        widget=forms.PasswordInput(attrs={"class": "mb-2"}),
-        label="Re-type password",
-    )
+    confirm_password = forms.CharField(widget=forms.PasswordInput())
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for field in self.fields:
             self.fields[f"{field}"].required = True
-            self.fields[f"{field}"].widget.attrs["class"] += (
-                " rounded-sm border px-2 py-1 focus:outline-0"
+            self.fields[f"{field}"].widget.attrs["class"] = (
+                "rounded-sm border px-2 py-1 focus:outline-0"
             )
 
     def clean(self):
@@ -75,36 +72,36 @@ class EditProfileForm(forms.ModelForm):
     first_name = forms.CharField(
         max_length=50,
         validators=edit_profile_validators["first_name"],
-        widget=forms.TextInput(attrs={"class": ""}),
+        widget=forms.TextInput(),
     )
     last_name = forms.CharField(
         max_length=50,
         validators=edit_profile_validators["last_name"],
-        widget=forms.TextInput(attrs={"class": ""}),
+        widget=forms.TextInput(),
     )
     birthday = forms.CharField(
         validators=edit_profile_validators["birthday"],
-        widget=forms.TextInput(attrs={"class": "", "type": "date"}),
+        widget=forms.TextInput(attrs={"type": "date"}),
     )
     address = forms.CharField(
         max_length=100,
         validators=edit_profile_validators["address"],
-        widget=forms.TextInput(attrs={"class": "w-full"}),
+        widget=forms.TextInput(),
     )
     education = forms.CharField(
         max_length=100,
         validators=edit_profile_validators["education"],
-        widget=forms.TextInput(attrs={"class": "w-full"}),
+        widget=forms.TextInput(),
     )
     work = forms.CharField(
         max_length=100,
         validators=edit_profile_validators["work"],
-        widget=forms.TextInput(attrs={"class": "w-full"}),
+        widget=forms.TextInput(),
     )
     link = forms.CharField(
         max_length=100,
         validators=edit_profile_validators["link"],
-        widget=forms.TextInput(attrs={"class": "w-full"}),
+        widget=forms.TextInput(),
     )
     bio = forms.CharField(
         max_length=200,
@@ -117,9 +114,7 @@ class EditProfileForm(forms.ModelForm):
             }
         ),
     )
-    picture = forms.ImageField(
-        widget=forms.FileInput(attrs={"class": "hidden"}), required=False
-    )
+    picture = forms.ImageField(widget=forms.FileInput())
 
     class Meta:
         model = Profile
@@ -139,6 +134,6 @@ class EditProfileForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         for field in self.fields:
             self.fields[f"{field}"].required = False
-            self.fields[f"{field}"].widget.attrs["class"] += (
-                " rounded-sm border px-2 py-1 focus:outline-0"
+            self.fields[f"{field}"].widget.attrs["class"] = (
+                "rounded-sm border px-2 py-1 focus:outline-0"
             )
