@@ -1,0 +1,18 @@
+<form
+   method="post"
+   action="{% url "interaction:save" blog_id=blog.id %}"
+   hx-push-url="false"
+   hx-target="this"
+   hx-swap="outerHTML show:none"
+   hx-trigger="click"
+   class="inline-block cursor-pointer"
+>
+   {% csrf_token %}
+   {% if blog.is_saved %}
+      <i class="fa-solid fa-bookmark text-lg"></i>
+      Saved
+   {% else %}
+      <i class="fa-regular fa-bookmark text-lg"></i>
+      Save
+   {% endif %}
+</form>

@@ -20,8 +20,8 @@
       </button>
       <img
          class="profile-btn hover:text-theme-base h-9 w-9 cursor-pointer rounded-full border-2"
-         {% if request.user.profile.picture %}
-            src="{{ request.user.profile.picture.url }}"
+         {% if user.profile.picture %}
+            src="{{ user.profile.picture.url }}"
          {% else %}
             src= {% static "img/stock_pfp.jpg" %}
          {% endif %}

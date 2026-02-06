@@ -3,9 +3,10 @@ from django.http import HttpResponse, HttpResponseNotFound
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 
-from user.models import Profile
 from blog.models import Blog
 from blog.forms import CreateBlogForm, BlogSectionFormSet
+from interaction.models import Comment
+from interaction.forms import CommentForm
 
 
 def index_view(request):
@@ -18,21 +19,14 @@ def detail_view(request, blog_id, render_type="full"):
     template = "blog/detail.html"
     partial = "content"
 
-    user = request.user
-    profile = get_object_or_404(Profile, user=user)
     blog = get_object_or_404(Blog, id=blog_id)
-    blog_sections = blog.blogsection_set.all()
+    root_comments = Comment.objects.filter(blog=blog, depth=1)
 
-    context = {
-        "user": user,
-        "profile": profile,
-        "blog": blog,
-        "blog_sections": blog_sections,
-    }
+    form = CommentForm()
+    context = {"blog": blog, "root_comments": root_comments, "form": form}
 
     if request.htmx and render_type == "partial":
         template = f"{template}#{partial}"
-
     return render(request, template, context)
 
 

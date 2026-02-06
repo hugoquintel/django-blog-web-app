@@ -1,0 +1,17 @@
+{% load static %}
+
+<a href="" class="{{ hover }} {{ extra_classes }} {{ width|default:"w-fit" }} flex">
+   <img
+      class="border-gray-base h-10 w-10 rounded-full border"
+      {% if user.profile.picture %}
+         src="{{ user.profile.picture.url }}"
+      {% else %}
+         src="{% static "img/stock_pfp.jpg" %}"
+      {% endif %}
+      alt="{{ user.username }} profile picture"
+   />
+   <div class="{{ font_size|default:"text-sm" }} ml-2 overflow-hidden">
+      <p class="line-clamp-1 font-medium text-black">{{ user.username }}</p>
+      <p class="text-gray-dark line-clamp-1">{{ user.profile.get_full_name }}</p>
+   </div>
+</a>

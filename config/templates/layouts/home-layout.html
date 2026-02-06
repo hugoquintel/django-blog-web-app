@@ -3,14 +3,14 @@
 {% block body %}
    <!-- Header/Banner -->
    {% block header %}
-      <c-header/>
+      <c-header />
    {% endblock header %}
    <!-- Header/Banner -->
 
    <!-- Left side bar -->
    {% block left_sidebar %}
       <div
-         class="left-sidebar h-content border-gray-light fixed top-14 left-0 flex w-80 flex-col justify-between border-r p-3"
+         class="left-sidebar h-content border-gray-light fixed top-14 left-0 flex w-2/10 flex-col justify-between border-r p-3"
       >
          <div class="search h-60">
             <div class="search-bar">
@@ -34,10 +34,7 @@
                   </button>
                </form>
             </div>
-            <ul
-               class="my-1 max-h-60 overflow-y-auto rounded-lg shadow-lg"
-               role="list"
-            >
+            <ul class="my-1 max-h-60 overflow-y-auto rounded-lg shadow-lg" role="list">
                <li class="p-2">
                   <a href="" class="hover:bg-gray-light flex rounded-lg p-1">
                      <img
@@ -116,7 +113,7 @@
    <!-- Right side bar -->
    {% block right_sidebar %}
       <div
-         class="right-sidebar h-content border-gray-light fixed top-14 right-0 flex w-80 flex-col justify-between border-l p-3"
+         class="right-sidebar h-content border-gray-light fixed top-14 right-0 flex w-2/10 flex-col justify-between border-l p-3"
       >
          <div class="ads h-60">
             <div class="ad">

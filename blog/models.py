@@ -12,8 +12,9 @@ class Blog(models.Model):
     title = models.CharField(max_length=100, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
     picture = models.ImageField(null=True, blank=True)
-    saved_by = models.ManyToManyField(User, related_name="saved_posts", blank=True)
-    likes = models.ManyToManyField(User, related_name="blog_like", blank=True)
+    saved_by = models.ManyToManyField(User, related_name="saved_blogs", blank=True)
+    liked_by = models.ManyToManyField(User, related_name="liked_blogs", blank=True)
+    like_count = models.PositiveIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

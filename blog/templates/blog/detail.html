@@ -3,29 +3,21 @@
 
 {% block content %}
    {% partialdef content inline %}
-      <div id="content" class="mx-80 mb-4 flex w-6/10 flex-col items-center space-y-5 pt-25">
+      <div
+         x-data='{addURL: "{% url "interaction:add-comment" blog_id=blog.id %}",
+                  reply: false,
+                  commenter: ""}'
+         class="mx-auto mb-25 flex w-6/10 flex-col items-center space-y-20 pt-25"
+      >
          <div class="mb-2 flex w-8/10 items-center space-x-6">
-            <a href="" class="flex rounded-lg">
-               <img
-                  class="border-gray-base h-10 w-10 rounded-full border"
-                  {% if profile.picture %}
-                     src="{{ profile.picture.url }}"
-                  {% else %}
-                     src="{% static "img/stock_pfp.jpg" %}"
-                  {% endif %}
-                  alt="profile picture"
-               />
-               <div class="ml-3 overflow-hidden">
-                  <p class="line-clamp-1 text-sm font-medium text-black">{{ user }}</p>
-                  <p class="text-gray-dark line-clamp-1 text-sm">{{ profile.get_full_name }}</p>
-               </div>
-            </a>
-
-            <button
-               class="border-gray-light bg-theme-light text-gray-dark cursor-pointer rounded-sm border px-2 py-1.5 text-sm font-semibold hover:opacity-85"
+            <c-user-card :user="blog.user" />
+            <c-button
+               bg-color="bg-theme-light"
+               text-color="text-gray-dark"
+               extra-classes="font-semibold"
             >
                Follow
-            </button>
+            </c-button>
          </div>
 
          <div class="text-gray-dark mb-2 flex w-8/10 space-x-4 px-1 text-xs">
@@ -37,14 +29,10 @@
             {% endif %}
          </div>
 
-         <div class="interactions w-8/10 space-x-2 px-1">
-            <button class="cursor-pointer">
-               <i class="fa-regular fa-heart text-lg"></i>{{ blog.likes.count }}
-            </button>
-            <button class="cursor-pointer"><i class="fa-regular fa-comment text-lg"></i>100</button>
-            <button class="cursor-pointer">
-               <i class="fa-regular fa-bookmark text-lg"></i>Save
-            </button>
+         <div class="w-8/10 space-x-2 px-1">
+            {% include "interaction/like.html" with blog=blog %}
+            <a class="cursor-pointer"><i class="fa-regular fa-comment text-lg"></i> 100</a>
+            {% include "interaction/save.html" %}
          </div>
 
          <div class="border-gray-light w-8/10 space-y-10 border-b pb-4">
@@ -54,15 +42,15 @@
                   {{ blog.description }}
                </h2>
             </div>
-            {% for blog_section in blog_sections %}
+            {% for blog_section in blog.blogsection_set.all %}
                <div class="space-y-2">
                   <h3 class="text-2xl font-bold">
                      {{ forloop.counter }}. {{ blog_section.title|capfirst }}
                   </h3>
                   {% if blog_section.picture %}
-                     <div class="space-y-2 mb-6">
+                     <div class="mb-6 space-y-2">
                         <img
-                           class="rounded-lg mx-auto"
+                           class="mx-auto rounded-lg"
                            src="{{ blog_section.picture.url }}"
                            alt="{{ blog_section.picture }}"
                         />
@@ -76,83 +64,69 @@
                   <p>{{ blog_section.content }}</p>
                </div>
             {% endfor %}
-            <p class="text-gray-dark float-end italic">Written by <strong>{{ user }}</strong></p>
+            <p class="text-gray-dark float-end italic">
+               Written by <strong>{{ blog.user.username }}</strong>
+            </p>
          </div>
 
-         <div class="comment-section w-8/10">
-            <h1 class="mb-5 text-xl font-bold">Comments</h1>
-            <div class="comments">
-               <div class="comment space-y-5">
-                  <div class="space-y-2 p-1">
-                     <a href="" class="border-gray-light flex border-b pb-2 text-sm">
-                        <img
-                           class="border-gray-base h-10 w-10 rounded-full border"
-                           src="https://cdn.pixabay.com/photo/2024/05/26/10/15/bird-8788491_1280.jpg"
-                           alt=""
-                        />
-                        <div class="ml-3 overflow-hidden">
-                           <p class="line-clamp-1 font-medium text-black">
-                              Heyo ajso asdadw bangalore asdsadsadsadsadsadasdas
-                           </p>
-                           <p class="text-gray-dark line-clamp-1">
-                              Heyo ajso asdadw bangalore asdsadsadsadsadsadasdas
-                           </p>
-                        </div>
-                     </a>
-                     <p class="bg-gray-light rounded-lg p-2 text-sm">
-                        Contrary to popular belief, Lorem Ipsum is not simply random text. It has
-                        roots in a piece of classical Latin literature from 45 BC, making it over
-                        2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney
-                        College in Virginia,
-                     </p>
-                     <div class="text-gray-dark flex w-8/10 space-x-2 text-xs">
-                        <span class="">Sep 15, 2025</span>
-                        <span class=""><strong>(Editted)</strong></span>
-                     </div>
-                     <div class="interactions w-8/10 space-x-2 text-sm">
-                        <span><i class="fa-regular fa-heart text-base"></i>100</span>
-                        <span><i class="fa-regular fa-comment text-base"></i>100</span>
-                     </div>
-                  </div>
-                  <div class="sub_comments border-l pl-6">
-                     <div class="comment space-y-5">
-                        <div class="bg-gray-light rounded-lg p-2">
-                           <a href="" class="border-gray-base mb-2 flex border-b pb-2 text-sm">
-                              <img
-                                 class="border-gray-base h-10 w-10 rounded-full border"
-                                 src="https://cdn.pixabay.com/photo/2024/05/26/10/15/bird-8788491_1280.jpg"
-                                 alt=""
-                              />
-                              <div class="ml-3 overflow-hidden">
-                                 <p class="line-clamp-1 font-medium text-black">
-                                    Heyo ajso asdadw bangalore asdsadsadsadsadsadasdas
-                                 </p>
-                                 <p class="text-gray-dark line-clamp-1">
-                                    Heyo ajso asdadw bangalore asdsadsadsadsadsadasdas
-                                 </p>
-                              </div>
-                           </a>
-                           <p class="mb-4 text-sm">
-                              Contrary to popular belief, Lorem Ipsum is not simply random text. It
-                              has roots in a piece of classical Latin literature from 45 BC, making
-                              it over 2000 years old. Richard McClintock, a Latin professor at
-                              Hampden-Sydney College in Virginia,
-                           </p>
-                           <div class="text-gray-dark mb-2 flex w-8/10 space-x-2 text-xs">
-                              <span class="">Sep 15, 2025</span>
-                              <span class=""><strong>(Editted)</strong></span>
-                           </div>
-                           <div class="interactions w-8/10 space-x-2 text-sm">
-                              <span><i class="fa-regular fa-heart text-base"></i>100</span>
-                              <span><i class="fa-regular fa-comment text-base"></i>100</span>
-                           </div>
-                        </div>
-                        <div class="sub_comments ml-6"></div>
-                     </div>
-                  </div>
+         {% comment %}Start: comment section{% endcomment %}
+         <div id="comment" class="relative w-8/10">
+            {% partialdef comment inline %}
+               <h1 class="text-xl font-bold">Comments</h1>
+               <div>
+                  {% for comment in root_comments %}
+                     <c-comment :blog="blog" :comment="comment" />
+                  {% endfor %}
                </div>
-            </div>
+               <div class="bg-gray-light fixed bottom-0 left-[25%] w-1/2 rounded-t-sm px-2 py-2">
+                  <form
+                     :action="addURL"
+                     method="post"
+                     hx-target="this"
+                     hx-push-url="false"
+                     hx-swap="show:window:bottom"
+                     @submit='document.body.addEventListener("htmx:configRequest", (event)=>{console.log(event.detail)})'
+                     class="flex w-full flex-col rounded-md bg-white"
+                  >
+                     {% partialdef comment-form inline %}
+                        {% csrf_token %}
+                        <div
+                           x-show="reply"
+                           class="bg-gray-light flex justify-between px-2 pb-1 text-sm"
+                        >
+                           <p>
+                              Replying to
+                              <span x-text="commenter" class="font-semibold italic"></span>
+                           </p>
+                           <button
+                              @click='document.body.addEventListener("htmx:configRequest", (event)=>{event.detail.path = addURL;});
+                                      reply=false;'
+                              type="button"
+                              class="cursor-pointer hover:underline"
+                           >
+                              Cancel
+                           </button>
+                        </div>
+                        {{ form.content }}
+                        <div class="flex justify-between px-2 py-1.5">
+                           <div class="flex items-center text-lg">
+                              <i class="fa-regular fa-image"></i>
+                           </div>
+                           <c-button
+                              type="submit"
+                              bg-color="bg-theme-dark"
+                              text-color="text-white"
+                              padding="px-2 py-1"
+                           >
+                              Comment
+                           </c-button>
+                        </div>
+                     {% endpartialdef comment-form %}
+                  </form>
+               </div>
+            {% endpartialdef comment %}
          </div>
+         {% comment %}End: comment section{% endcomment %}
       </div>
    {% endpartialdef content %}
 {% endblock content %}

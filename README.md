@@ -11,9 +11,13 @@ This is the first stage of devlopment
 - make subcomments (maybe)
 - Fix get_full_name
 - Save images after form fail to validate (client-side) (maybe)
+- Fix the names in url
+- Optimization
+- Remove python-dateutil
 
 ## FEATURES TO IMPLEMENT:
 - follows
 - comments
 - notifications
+- search
 - delete blog
