@@ -1,31 +1,29 @@
 {% load static %}
 
 <div
-   class="header bg-theme-dark fixed z-999 flex h-14 w-full items-center justify-between px-5 text-lg text-white"
+   class="bg-theme-dark fixed z-1 flex h-14 w-full items-center justify-between px-5 text-lg text-white"
 >
-   <div class="">
-      <div class="write-blog-btn font-light">Some logo</div>
-   </div>
+   <a href="{% url "blog:index" %}" class="cursor-pointer font-light hover:text-theme-base">Some logo</a>
 
-   <div class="">
-      <div class="write-blog-btn font-light">Something grand tbh</div>
-   </div>
+   <div class="font-light">Something grand tbh</div>
 
    <div class="flex items-center space-x-3">
-      <a href="{% url "blog:create" %}" class="hover:text-theme-base cursor-pointer">
-         <i class="fa-regular fa-pen-to-square"></i>Write
-      </a>
-      <button class="hover:text-theme-base cursor-pointer">
-         <i class="fa-regular fa-bell"></i>
-      </button>
-      <img
-         class="profile-btn hover:text-theme-base h-9 w-9 cursor-pointer rounded-full border-2"
-         {% if user.profile.picture %}
-            src="{{ user.profile.picture.url }}"
-         {% else %}
-            src= {% static "img/stock_pfp.jpg" %}
-         {% endif %}
-         alt="Profile picture"
-      />
+      {% if is_login %}
+         <a href="{% url "blog:create" partial=None %}" class="hover:text-theme-base cursor-pointer">
+            <i class="fa-regular fa-pen-to-square"></i>Write
+         </a>
+         <button class="hover:text-theme-base cursor-pointer">
+            <i class="fa-regular fa-bell"></i>
+         </button>
+         <img
+            class="profile-btn hover:text-theme-base h-9 w-9 cursor-pointer rounded-full border-2"
+            {% if user.profile.picture %}
+               src="{{ user.profile.picture.url }}"
+            {% else %}
+               src= {% static "img/stock_pfp.jpg" %}
+            {% endif %}
+            alt="Profile picture"
+         />
+      {% endif %}
    </div>
 </div>

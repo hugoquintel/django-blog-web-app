@@ -1,8 +1,8 @@
 {% load static %}
 
-<a href="" class="{{ hover }} {{ extra_classes }} {{ width|default:"w-fit" }} flex">
+<a href="" class="{{ extra_classes }} flex items-center justify-center">
    <img
-      class="border-gray-base h-10 w-10 rounded-full border"
+      class="{{ img_size }} border-gray-base rounded-full border"
       {% if user.profile.picture %}
          src="{{ user.profile.picture.url }}"
       {% else %}
@@ -10,8 +10,12 @@
       {% endif %}
       alt="{{ user.username }} profile picture"
    />
-   <div class="{{ font_size|default:"text-sm" }} ml-2 overflow-hidden">
-      <p class="line-clamp-1 font-medium text-black">{{ user.username }}</p>
-      <p class="text-gray-dark line-clamp-1">{{ user.profile.get_full_name }}</p>
+   <div class="{{ font_size|default:"text-sm" }} {{ text_classes }} ml-2 overflow-hidden">
+      <p class="{{ text_element_classes }} line-clamp-1 font-semibold text-black">
+         {{ user.username }}
+      </p>
+      <p class="{{ text_element_classes }} text-gray-dark line-clamp-1">
+         {{ user.profile.get_full_name }}
+      </p>
    </div>
 </a>

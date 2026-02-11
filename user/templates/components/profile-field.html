@@ -1,0 +1,7 @@
+{% load widget_tweaks %}
+
+<span class="{{ extra_classes }}">
+   <c-error :field="field" />
+   <label for="{{ field.auto_id }}" class="block font-semibold">{{ label }}</label>
+   {% render_field field class+=extra_classes %}
+</span>

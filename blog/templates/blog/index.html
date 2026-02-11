@@ -2,81 +2,86 @@
 {% load static %}
 
 {% block content %}
-   <div id="content" class="mx-80 mb-4 flex w-6/10 flex-col items-center pt-25">
-      <div class="sort-by border-gray-light mb-8 flex w-7/10 items-center justify-between border-b">
-         <div class="flex">
-            <button class="bg-theme-base cursor-pointer rounded-t-sm px-3 py-1 text-white">
-               All
-            </button>
-            <button class="hover:bg-gray-light cursor-pointer rounded-t-sm px-3 py-1">
-               Following
-            </button>
-         </div>
-
-         <div class="flex">
-            <button class="hover:bg-gray-light cursor-pointer rounded-t-sm px-3 py-1">
-               Popularity
-            </button>
-            <button class="hover:bg-gray-light cursor-pointer rounded-t-sm px-3 py-1">Date</button>
-         </div>
-      </div>
-
-      <div class="blogs w-7/10 space-y-10">
-         {% for blog in blogs %}
-            <div class="blog border-gray-light border-b pb-2">
-               <a href="" class="space-x-0.5 p-1">
-                  <img
-                     class="border-gray-light inline-block h-6 w-6 rounded-full border"
-                     {% if blog.user.profile.picture %}
-                        src="{{ blog.user.profile.picture.url }}"
-                     {% else %}
-                        src="{% static "img/stock_pfp.jpg" %}"
-                     {% endif %}
-                     alt="profile image"
-                  />
-                  <p class="inline-block text-sm font-semibold text-black hover:underline">
-                     {{ blog.user }}
-                  </p>
-                  <p class="text-gray-dark inline-block text-sm font-medium hover:underline">
-                     {{ blog.user.profile.get_full_name }}
-                  </p>
-               </a>
-
-               <a
-                  href="{% url "blog:detail" blog_id=blog.id %}"
-                  hx-target="#content"
-                  hx-swap="outerHTML"
-                  class="hover:bg-gray-light my-2 flex justify-between rounded-lg p-1"
-               >
-                  <div class="break-all">
-                     <p class="line-clamp-2 text-2xl font-bold">{{ blog.title }}</p>
-                     <p class="text-gray-dark line-clamp-2 text-lg font-semibold">
-                        {{ blog.description }}
-                     </p>
-                  </div>
-                  {% if blog.picture %}
-                     <img
-                        class="h-full w-1/4 rounded-sm"
-                        src="{{ blog.picture.url }}"
-                        alt="blog picture"
-                     />
-                  {% endif %}
-               </a>
-               <span class="text-gray-dark p-1 text-sm">{{ blog.created_at|date:"M d, Y" }}</span>
-
-               <div class="text-gray-dark space-x-2 p-1 text-sm">
-                  <button class="cursor-pointer">
-                     <i class="fa-regular fa-heart text-base"></i>{{ blog.likes.count }}
-                  </button>
-                  <button class="cursor-pointer">
-                     <i class="fa-regular fa-comment text-base"></i>100
-                  </button>
-                  <button class="cursor-pointer">
-                     <i class="fa-regular fa-bookmark text-base"></i>Save
-                  </button>
-               </div>
+   {% partialdef content inline %}
+      <div id="content" class="mx-auto mb-25 flex w-6/10 flex-col items-center pt-25">
+         <div
+            class="sort-by border-gray-light mb-8 flex w-7/10 items-center justify-between border-b"
+         >
+            <div class="flex">
+               <button class="bg-theme-base cursor-pointer rounded-t-sm px-3 py-1 text-white">
+                  All
+               </button>
+               <button class="hover:bg-gray-light cursor-pointer rounded-t-sm px-3 py-1">
+                  Following
+               </button>
             </div>
-         {% endfor %}
+
+            <div class="flex">
+               <button class="hover:bg-gray-light cursor-pointer rounded-t-sm px-3 py-1">
+                  Popularity
+               </button>
+               <button class="hover:bg-gray-light cursor-pointer rounded-t-sm px-3 py-1">
+                  Date
+               </button>
+            </div>
+         </div>
+
+         <div class="w-7/10 space-y-10">
+            {% for blog in blogs %}
+               <div class="blog border-gray-light border-b pb-2">
+                  <c-user-card
+                     :user="blog.user"
+                     extra-classes="w-fit p-1"
+                     img-size="h-6 w-6"
+                     text-classes="flex space-x-1"
+                     text-element-classes="hover:underline"
+                  />
+                  <a
+                     href="{% url "blog:detail" blog_id=blog.id partial="content" %}"
+                     hx-target="#content"
+                     hx-swap="outerHTML"
+                     class="hover:bg-gray-light mb-2 flex justify-between rounded-lg p-1"
+                  >
+                     <div class="break-all">
+                        <p class="line-clamp-2 text-2xl font-bold">{{ blog.title }}</p>
+                        <p class="text-gray-dark line-clamp-2 text-lg font-semibold">
+                           {{ blog.description }}
+                        </p>
+                     </div>
+                     {% if blog.picture %}
+                        <img
+                           class="h-full w-1/4 rounded-sm"
+                           src="{{ blog.picture.url }}"
+                           alt="blog picture"
+                        />
+                     {% endif %}
+                  </a>
+
+                  <div class="flex items-center justify-between px-1 text-sm">
+                     <div class="flex items-center space-x-2">
+                        {% include "interaction/like.html" with instance=blog %}
+                        <a
+                           href="{% url "blog:detail" blog_id=blog.id partial="content" %}#comment"
+                           hx-target="#content"
+                           hx-swap="outerHTML"
+                           class="inline-flex cursor-pointer items-center"
+                        >
+                           <i class="fa-regular fa-comment"></i>
+                           <p class="ml-0.5">{{ blog.comment_set.count }}</p>
+                        </a>
+                        {% include "interaction/save.html" with blog=blog %}
+                     </div>
+                     <div class="text-gray-dark text-sm">
+                        <i class="fa-solid fa-pen"></i>
+                        {{ blog.created_at|date:"M d, Y" }}
+                        {% if blog.created_at != blog.updated_at %}
+                           <strong>(Edited)</strong>
+                        {% endif %}
+                     </div>
+                  </div>
+               </div>
+            {% endfor %}
+         </div>
       </div>
-   </div>
+   {% endpartialdef content %}
 {% endblock content %}

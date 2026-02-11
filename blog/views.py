@@ -1,12 +1,14 @@
-from django.shortcuts import render, get_object_or_404
-from django.http import HttpResponse, HttpResponseNotFound
 from django.urls import reverse
+from django.http import HttpResponse
+from django.core.exceptions import PermissionDenied
+from django.views.decorators.http import require_POST
+from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 
 from blog.models import Blog
-from blog.forms import CreateBlogForm, BlogSectionFormSet
 from interaction.models import Comment
 from interaction.forms import CommentForm
+from blog.forms import CreateBlogForm, BlogSectionFormSet
 
 
 def index_view(request):
@@ -15,29 +17,21 @@ def index_view(request):
     return render(request, "blog/index.html", context)
 
 
-def detail_view(request, blog_id, render_type="full"):
+def detail_view(request, blog_id, partial="None"):
     template = "blog/detail.html"
-    partial = "content"
-
     blog = get_object_or_404(Blog, id=blog_id)
     root_comments = Comment.objects.filter(blog=blog, depth=1)
-
     form = CommentForm()
     context = {"blog": blog, "root_comments": root_comments, "form": form}
-
-    if request.htmx and render_type == "partial":
+    if request.htmx and partial != "partial":
         template = f"{template}#{partial}"
     return render(request, template, context)
 
 
-def delete_view(request):
-    return HttpResponse("nothing yet")
-
-
 @login_required
-def create_edit_view(request, blog_id=None):
+def create_edit_view(request, partial="None", blog_id=None):
     context, del_ids = {"blog_id": blog_id}, set()
-    template, partial = "blog/create-edit.html", "form"
+    template = "blog/create-edit.html"
     blog = get_object_or_404(Blog, id=blog_id) if blog_id else None
     if request.method == "POST":
         form_blog = CreateBlogForm(request.POST, instance=blog)
@@ -86,6 +80,15 @@ def create_edit_view(request, blog_id=None):
     context["empty_form"] = formset_blog_sections.empty_form
     context["delete_ids"] = del_ids
 
-    if request.htmx:
+    if request.htmx and partial != "None":
         template = f"{template}#{partial}"
     return render(request, template, context)
+
+
+@require_POST
+def delete_view(request, blog_id):
+    blog = get_object_or_404(Blog, id=blog_id)
+    if request.user != blog.user:
+        raise PermissionDenied()
+    blog.delete()
+    return redirect("blog:index")

@@ -3,7 +3,7 @@
 {% block body %}
    <!-- Header/Banner -->
    {% block header %}
-      <c-header />
+      <c-header is-login />
    {% endblock header %}
    <!-- Header/Banner -->
 
@@ -95,6 +95,7 @@
             <a
                hx-headers='{"x-csrftoken": "{{ csrf_token }}"}'
                hx-post="{% url "user:sign-out" %}"
+               hx-target="body"
                hx-push-url="true"
                class="hover:bg-gray-light cursor-pointer rounded-lg p-2 text-lg font-bold text-red-700"
             >

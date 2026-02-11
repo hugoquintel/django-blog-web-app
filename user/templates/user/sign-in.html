@@ -3,18 +3,18 @@
 
 {% block title %}Sign in{% endblock title %}
 
-{% block left_sidebar %}
+{% block left_content %}
    <div
       class="left-sidebar min-h-content bg-theme-light relative top-14 left-0 flex w-2/5 flex-col items-center justify-center overflow-auto"
    >
-      {% partialdef form inline %}
-         <div id="form" class="bg-theme-light flex w-6/10 flex-col justify-center space-y-2 py-6">
+      <div id="auth-form" class="bg-theme-light flex w-6/10 flex-col justify-center space-y-2 py-6">
+         {% partialdef auth-form inline %}
             <h1 class="text-text-black mb-6 text-3xl font-extrabold">Sign in to your account</h1>
             <form
                method="post"
-               action="{% url "user:sign-in" %}"
-               hx-target="#form"
-               hx-swap="outerHTML"
+               action="{% url "user:sign-in" partial="auth-form" %}"
+               hx-target="#auth-form"
+               hx-push-url="false"
                x-data="{showPassword:false}"
                class="flex flex-col"
             >
@@ -22,11 +22,7 @@
 
                {% if messages %}
                   {% for message in messages %}
-                     <span
-                        class="bg-theme-base text-theme-dark mb-2 w-full rounded-sm px-3 py-1.5 text-lg font-bold"
-                     >
-                        <p>{{ message }}<i class="fa-solid fa-circle-check ml-1"></i></p>
-                     </span>
+                     <c-message message="{{ message }}" />
                   {% endfor %}
                {% endif %}
 
@@ -57,18 +53,13 @@
             <div class="flex items-center justify-center text-sm">
                <p>Don't have an account?&nbsp;</p>
                <a
-                  href="{% url "user:sign-up" %}"
-                  hx-target="#form"
-                  hx-swap="outerHTML"
+                  href="{% url "user:sign-up" partial="auth-form" %}"
+                  hx-target="#auth-form"
                   class="text-theme font-semibold underline"
                   >Sign up here</a
                >
             </div>
-
-            <script>
-               document.title = 'Signin';
-            </script>
-         </div>
-      {% endpartialdef form %}
+         {% endpartialdef auth-form %}
+      </div>
    </div>
-{% endblock left_sidebar %}
+{% endblock left_content %}

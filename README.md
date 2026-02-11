@@ -8,7 +8,6 @@ This is the first stage of devlopment
 - Private mode for user (maybe)
 - Remove a bunch of unused tailwind classes
 - Optimize view functions (user app)
-- make subcomments (maybe)
 - Fix get_full_name
 - Save images after form fail to validate (client-side) (maybe)
 - Fix the names in url
@@ -16,8 +15,6 @@ This is the first stage of devlopment
 - Remove python-dateutil
 
 ## FEATURES TO IMPLEMENT:
-- follows
-- comments
 - notifications
 - search
 - delete blog

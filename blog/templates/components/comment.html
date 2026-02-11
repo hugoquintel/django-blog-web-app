@@ -6,17 +6,15 @@
    {% endif %}
 >
    <div class="space-y-0.5 p-1 pt-5">
-      <c-user-card :user="comment.user" />
-      <p class="bg-gray-light rounded-lg p-2 text-sm">{{ comment.content }}</p>
+      <c-user-card :user="comment.user" extra-classes="w-fit" img-size="h-10 w-10" />
+      <p class="bg-gray-light rounded-lg p-2 text-sm wrap-break-word">{{ comment.content }}</p>
       <div class="flex items-center justify-between">
          <div class="space-x-2 text-sm">
             <span><i class="fa-regular fa-heart text-base"></i>{{ comment.like_count }}</span>
             <span>
                <button
                   x-data='{replyURL: "{% url "interaction:reply-comment" blog_id=blog.id comment_id=comment.id %}"}'
-                  @click='document.body.addEventListener("htmx:configRequest", (event)=>{event.detail.path = replyURL;});
-                          reply = true; 
-                          commenter = "{{ comment.user.username }}";'
+                  @click='URL = replyURL; reply = true; commenter = "{{ comment.user.username }}";'
                   class="cursor-pointer text-base hover:opacity-50"
                >
                   <i class="fa-regular fa-comment"></i></button
@@ -33,6 +31,7 @@
    </div>
 
    {% if comment.get_depth|divisibleby:4 %}
+      {% comment %}NOt finished{% endcomment %}
       Go to comment thread
    {% else %}
       <div class="ml-3 [&>*:not(:last-child)]:border-l-2 [&>*:not(:last-child)]:border-gray-300">

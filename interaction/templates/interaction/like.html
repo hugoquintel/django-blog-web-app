@@ -1,17 +1,18 @@
 <form
    method="post"
+   {% comment %} add if {% endcomment %}
    action="{% url "interaction:like" blog_id=blog.id %}"
    hx-push-url="false"
    hx-target="this"
    hx-swap="outerHTML show:none"
    hx-trigger="click"
-   class="inline-block cursor-pointer"
+   class="inline-flex cursor-pointer items-center"
 >
    {% csrf_token %}
    {% if user in blog.liked_by.all %}
-      <i class="fa-solid fa-heart text-lg"></i>
+      <i class="fa-solid fa-heart"></i>
    {% else %}
-      <i class="fa-regular fa-heart text-lg"></i>
+      <i class="fa-regular fa-heart"></i>
    {% endif %}
-   {{ blog.liked_by.count }}
+   <p class="ml-0.5">{{ blog.liked_by.count }}</p>
 </form>

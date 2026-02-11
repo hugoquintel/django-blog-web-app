@@ -11,9 +11,8 @@ from user.forms import SigninForm, SignupForm, EditProfileForm
 
 
 # Create your views here.
-def signin_view(request, render_type="partial"):
+def signin_view(request, partial="None"):
     template = "user/sign-in.html"
-    partial = "form"
     if request.method == "POST":
         form = SigninForm(request.POST)
         if form.is_valid():
@@ -22,7 +21,6 @@ def signin_view(request, render_type="partial"):
             user = authenticate(username=username, password=password)
             first_login = user.last_login is None
             login(request, user)
-
             headers = {
                 "HX-Location": reverse(
                     "user:edit-profile" if first_login else "blog:index"
@@ -32,17 +30,13 @@ def signin_view(request, render_type="partial"):
     else:
         form = SigninForm()
     context = {"form": form}
-    if render_type == "partial":
-        template = f"{template}#{partial}" if request.htmx else template
-    response = render(request, template, context)
-    if render_type == "full":
-        response["HX-Retarget"] = "body"
-    return response
+    if request.htmx and partial != "None":
+        template = f"{template}#{partial}"
+    return render(request, template, context)
 
 
-def signup_view(request, render_type="partial"):
+def signup_view(request, partial="None"):
     template = "user/sign-up.html"
-    partial = "form"
     if request.method == "POST":
         form = SignupForm(request.POST)
         if form.is_valid():
@@ -51,34 +45,26 @@ def signup_view(request, render_type="partial"):
             password = form.cleaned_data.get("password")
             User.objects.create_user(username=username, email=email, password=password)
             messages.success(request, "Account created successfully!")
-            return redirect("user:sign-in")
+            return redirect("user:sign-in", partial="auth-form")
     else:
         form = SignupForm()
     context = {"form": form}
-
-    if render_type == "partial":
-        template = f"{template}#{partial}" if request.htmx else template
-    response = render(request, template, context)
-    if render_type == "full":
-        response["HX-Retarget"] = "body"
-    return response
+    if request.htmx and partial != "None":
+        template = f"{template}#{partial}"
+    return render(request, template, context)
 
 
 def signout_view(request):
     if request.method == "POST":
         logout(request)
-        headers = {
-            "HX-Location": reverse("user:sign-in", kwargs={"render_type": "full"})
-        }
-        return HttpResponse(headers=headers)
+        return redirect("user:sign-in", partial="None")
 
 
 @login_required(login_url=reverse_lazy("user:sign-in"))
 def edit_profile_view(request):
-    template = "user/profile-edit.html"
+    template = "user/edit-profile.html"
     profile = get_object_or_404(Profile, user=request.user)
     context = {"profile": profile}
-
     if request.method == "POST":
         form = EditProfileForm(request.POST, request.FILES, instance=profile)
         if form.is_valid():

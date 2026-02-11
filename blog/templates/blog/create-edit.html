@@ -29,14 +29,14 @@
             {% if blog_id %}
                action="{% url "blog:edit" blog_id=blog_id %}"
             {% else %}
-               action="{% url "blog:create" %}"
+               action="{% url "blog:create" partial="blog-form" %}"
             {% endif %}
             enctype="multipart/form-data"
             hx-target="this"
             hx-push-url="false"
             class="flex w-full flex-col px-10"
          >
-            {% partialdef form inline %}
+            {% partialdef blog-form inline %}
                {% if message %}
                   <c-message message="{{ message }}" />
                {% endif %}
@@ -77,11 +77,15 @@
                      <i class="fa-solid fa-plus"></i> Add section
                   </c-button>
 
-                  <c-button type="submit" bg-color="bg-theme-base" text-color="text-white"
-                     >Save
+                  <c-button type="submit" bg-color="bg-theme-base" text-color="text-white">
+                     {% if blog_id %}
+                        Save
+                     {% else %}
+                        Post
+                     {% endif %}
                   </c-button>
                </div>
-            {% endpartialdef form %}
+            {% endpartialdef blog-form %}
          </form>
          <span id="empty-section" x-ref="emptyForm" class="hidden">
             <c-blog-section-form :form="empty_form" index="__prefix__" />

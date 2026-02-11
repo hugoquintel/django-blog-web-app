@@ -12,6 +12,7 @@ media/
 
 # misc
 .DS_Store
+.prettierrc
 
 # Python-generated files
 __pycache__/

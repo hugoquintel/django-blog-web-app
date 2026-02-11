@@ -15,6 +15,7 @@ class Blog(models.Model):
     saved_by = models.ManyToManyField(User, related_name="saved_blogs", blank=True)
     liked_by = models.ManyToManyField(User, related_name="liked_blogs", blank=True)
     like_count = models.PositiveIntegerField(default=0)
+    comment_count = models.PositiveIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

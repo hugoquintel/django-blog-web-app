@@ -4,13 +4,12 @@
 {% block content %}
    {% partialdef content inline %}
       <div
-         x-data='{addURL: "{% url "interaction:add-comment" blog_id=blog.id %}",
-                  reply: false,
-                  commenter: ""}'
+         x-data='{addURL: "{% url "interaction:add-comment" blog_id=blog.id %}", URL: "", reply: false, commenter: ""}'
+         x-init="URL = addURL;"
          class="mx-auto mb-25 flex w-6/10 flex-col items-center space-y-20 pt-25"
       >
          <div class="mb-2 flex w-8/10 items-center space-x-6">
-            <c-user-card :user="blog.user" />
+            <c-user-card :user="blog.user" extra-classes="w-fit" img-size="h-10 w-10" />
             <c-button
                bg-color="bg-theme-light"
                text-color="text-gray-dark"
@@ -18,21 +17,91 @@
             >
                Follow
             </c-button>
-         </div>
+            {% if blog.user == user %}
+               <div
+                  x-data="{showDropdown: false, showDelete: false, canClickOutside: true}"
+                  class="ml-auto"
+               >
+                  <div
+                     x-show="showDelete"
+                     class="bg-gray-light/50 absolute top-0 left-0 z-1 h-full w-full"
+                  ></div>
+                  <div
+                     x-show="showDelete"
+                     class="border-gray-light fixed top-[40%] left-[50%] z-2 -translate-x-[50%] rounded-md border bg-white px-2 pb-1 shadow-lg"
+                  >
+                     <div
+                        class="border-gray-base flex items-center justify-center border-b p-3 font-bold"
+                     >
+                        Are you sure you want to delete this post?
+                     </div>
+                     <div class="flex justify-center">
+                        <button
+                           hx-target="body"
+                           hx-headers='{"x-csrftoken": "{{ csrf_token }}"}'
+                           hx-post="{% url "blog:delete" blog_id=blog.id %}"
+                           hx-push-url="true"
+                           @click="document.body.classList.remove('overflow-hidden');"
+                           class="flex w-1/2 cursor-pointer justify-center p-2 font-semibold text-red-500"
+                        >
+                           Delete
+                        </button>
+                        <button
+                           @click="showDelete = false; canClickOutside = true; document.body.classList.remove('overflow-hidden');"
+                           class="border-gray-base flex w-1/2 cursor-pointer justify-center border-l p-2"
+                        >
+                           Cancel
+                        </button>
+                     </div>
+                  </div>
 
-         <div class="text-gray-dark mb-2 flex w-8/10 space-x-4 px-1 text-xs">
-            <span class=""
-               ><i class="fa-solid fa-calendar mr-1"></i>{{ blog.created_at|date:"M d, Y" }}</span
-            >
-            {% if blog.created_at != blog.updated_at %}
-               <span class=""><strong>Editted:</strong> {{ blog.updated_at|date:"M d, Y" }}</span>
+                  <button
+                     @click="showDropdown = !showDropdown"
+                     class="hover:bg-gray-light cursor-pointer rounded-sm text-lg"
+                  >
+                     <i class="fa-solid fa-ellipsis-vertical"></i>
+                  </button>
+                  <ul
+                     x-show="showDropdown"
+                     @click.outside="canClickOutside && (showDropdown = false)"
+                     class="border-gray-light absolute mt-1 -translate-x-[75%] space-y-1 rounded-md border p-2 text-sm shadow-lg"
+                  >
+                     <li class="hover:bg-gray-light cursor-pointer rounded-md">
+                        <button class="flex cursor-pointer items-center px-1.5 py-1">
+                           <i class="fa-solid fa-pen mr-1"></i>
+                           <p>Edit</p>
+                        </button>
+                     </li>
+                     <li class="hover:bg-gray-light cursor-pointer rounded-md">
+                        <button
+                           @click="showDelete = true; canClickOutside = false; document.body.classList.add('overflow-hidden');"
+                           class="flex cursor-pointer items-center rounded-md px-1.5 py-1 text-red-500"
+                        >
+                           <i class="fa-solid fa-trash-can mr-1"></i>
+                           <p class="font-bold">Delete</p>
+                        </button>
+                     </li>
+                  </ul>
+               </div>
             {% endif %}
          </div>
 
-         <div class="w-8/10 space-x-2 px-1">
-            {% include "interaction/like.html" with blog=blog %}
-            <a class="cursor-pointer"><i class="fa-regular fa-comment text-lg"></i> 100</a>
-            {% include "interaction/save.html" %}
+         <div class="text-gray-dark mb-2 flex w-8/10 space-x-4 px-1 text-xs">
+            <span
+               ><i class="fa-solid fa-pen"></i>{{ blog.created_at|date:"M d, Y" }}</span
+            >
+            {% if blog.created_at != blog.updated_at %}
+               <span><strong>Editted:</strong> {{ blog.updated_at|date:"M d, Y" }}</span>
+            {% endif %}
+         </div>
+
+         <div class="flex w-8/10 items-center space-x-2 px-1">
+            {% include "interaction/like.html" with instance=blog %}
+            <a href="#comment" class="inline-flex cursor-pointer items-center">
+               <i class="fa-regular fa-comment"></i>
+               <p class="ml-0.5">{{ blog.comment_set.count }}</p>
+            </a>
+            {% include "interaction/save.html" with blog=blog %}
          </div>
 
          <div class="border-gray-light w-8/10 space-y-10 border-b pb-4">
@@ -80,12 +149,10 @@
                </div>
                <div class="bg-gray-light fixed bottom-0 left-[25%] w-1/2 rounded-t-sm px-2 py-2">
                   <form
-                     :action="addURL"
-                     method="post"
                      hx-target="this"
                      hx-push-url="false"
-                     hx-swap="show:window:bottom"
-                     @submit='document.body.addEventListener("htmx:configRequest", (event)=>{console.log(event.detail)})'
+                     hx-swap="show:none"
+                     @submit="htmx.ajax('POST', URL, {source: $el})"
                      class="flex w-full flex-col rounded-md bg-white"
                   >
                      {% partialdef comment-form inline %}
@@ -99,9 +166,8 @@
                               <span x-text="commenter" class="font-semibold italic"></span>
                            </p>
                            <button
-                              @click='document.body.addEventListener("htmx:configRequest", (event)=>{event.detail.path = addURL;});
-                                      reply=false;'
                               type="button"
+                              @click="URL = addURL; reply = false;"
                               class="cursor-pointer hover:underline"
                            >
                               Cancel
