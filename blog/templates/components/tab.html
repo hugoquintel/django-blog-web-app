@@ -1,0 +1,22 @@
+<label
+   for="{{ id }}"
+   {% if x_class %}
+      :class="{{ x_class }}"
+   {% endif %}
+   class="cursor-pointer rounded-t-sm px-3 py-1"
+>
+   {{ text }}
+</label>
+<input
+   id="{{ id }}"
+   value="{{ value }}"
+   name="{{ name }}"
+   type="radio"
+   {% if x_model %}
+      x-model="{{ x_model }}"
+   {% endif %}
+   {% if x_change %}
+      @change="{{ x_change }}"
+   {% endif %}
+   class="hidden"
+/>

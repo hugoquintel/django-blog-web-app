@@ -1,20 +1,16 @@
 {% load widget_tweaks %}
 
 <div
-   x-data="{index: '{{ index }}', 
-            src: '//:0', 
-            file: '', 
-            show: false,
-            deletePicture: false,
-            isDeleted: false}"
+   x-data="{src: '', fileName: '',
+            deletePicture: false, isDeleted: false}"
    {% if picture %}
-      x-init="src = '{{ picture.url }}'; show=true;"
+      x-init="src = '{{ picture.url }}'; fileName = '{{ picture.name }}'"
    {% endif %}
    x-show="!isDeleted"
    x-transition
    class="border-gray-light flex flex-col space-y-3 border-b"
 >
-   {{ form.id }}
+   {% render_field form.id %}
    <c-button
       tag="label"
       for="{{ form.DELETE.auto_id }}"
@@ -27,7 +23,7 @@
    </c-button>
 
    {% render_field form.DELETE x-model="isDeleted" class="hidden" %}
-   <input type="hidden" name="delete_ids" :value="isDeleted ? index : ``" />
+   <input type="hidden" name="delete_ids" :value="isDeleted ? {{ index }} : ''" />
 
    <div class="w-full space-y-3 space-x-3">
       <c-button
@@ -41,23 +37,23 @@
          Upload image
       </c-button>
 
-      <img x-ref="picture" :src="src" alt="" class="mx-auto rounded-sm" />
-      {% render_field form.picture x-ref="pictureInput" x-show="show" @change="deletePicture = false; file = $el.files[0]; if (file) {src = URL.createObjectURL(file); show=true; $nextTick(() => { URL.revokeObjectURL(src) });} " %}
-      {% render_field form.picture_title x-ref="pictureTitle" x-show="show" %}
+      <template x-if="src">
+         <img :src="src" :alt="fileName" class="mx-auto rounded-sm" />
+      </template>
+      {% render_field form.picture @change="[src, fileName] = $store.utils.displayImage($el)" %}
+      {% render_field form.picture_title x-show="src" %}
 
       <c-button
          bg-color="bg-orange-400"
          text-color="text-white"
          extra-classes="float-end"
-         :x-attrs="{ 'x-show': 'show' }"
-         :x-events="{ '@click': 'src=`//:0`;deletePicture=true;$refs.pictureInput.value=``;$refs.pictureTitle.value=``;show=false;' }"
+         x-click="src=''; deletePicture=true"
+         :extra-attrs="{'x-show': 'src'}"
       >
          Delete picture
       </c-button>
-      {% render_field form.picture_delete x-ref="deletePicture" ::checked="deletePicture" %}
+      {% render_field form.picture_delete ::checked="deletePicture" %}
    </div>
-   <c-error :field="form.title" />
-   {% render_field form.title ::required="!isDeleted" %}
-   <c-error :field="form.content" />
-   {% render_field form.content x-autosize="" ::required="!isDeleted" %}
+   <c-blog-input-field :field="form.title" extra-attrs="::required = !isDeleted" />
+   <c-blog-input-field :field="form.content" extra-attrs="x-autosize ::required = !isDeleted" />
 </div>

@@ -1,0 +1,15 @@
+{% for user in result %}
+   <li
+      {% if forloop.last and result.has_next %}
+         hx-get="{% url 'user:search' %}?query={{ query }}&page={{ result.next_page_number }}"
+         hx-trigger="revealed" hx-swap="afterend"
+      {% endif %}
+      class="p-1.5"
+   >
+      <c-user-card
+         :user="user"
+         img-size="h-10 w-10"
+         extra-classes="rounded-lg p-1 hover:bg-gray-light"
+      />
+   </li>
+{% endfor %}

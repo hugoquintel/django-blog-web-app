@@ -1,0 +1,32 @@
+<form
+   method="post"
+   action="{% url "interaction:follow" user_to_follow_id=user_to_follow_id %}"
+   hx-push-url="false"
+   hx-target="this"
+   hx-swap="show:none"
+   hx-trigger="click"
+   class="{{ extra_classes }} inline-flex cursor-pointer items-center"
+>
+   {% partialdef follow inline %}
+      {% csrf_token %}
+      {% if is_followed %}
+         <c-button
+            type="submit"
+            bg-color="bg-gray-light"
+            padding="px-2 py-1.5"
+            extra-classes="font-semibold"
+         >
+            <i class="fa-solid fa-check"></i> Following
+         </c-button>
+      {% else %}
+         <c-button
+            type="submit"
+            bg-color="bg-theme-light"
+            padding="px-3 py-1.5"
+            extra-classes="font-semibold"
+         >
+            Follow
+         </c-button>
+      {% endif %}
+   {% endpartialdef follow %}
+</form>

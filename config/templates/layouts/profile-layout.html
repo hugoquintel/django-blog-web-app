@@ -1,67 +1,51 @@
 {% extends "layouts/main-layout.html" %}
 
 {% block body %}
-
-   {% block header %}
-      <c-header/>
-   {% endblock header %}
-
    <!-- Left side bar -->
    {% block left_sidebar %}
       <div
-         class="h-content border-gray-light fixed top-14 left-0 flex w-90 flex-col space-y-5 overflow-auto border-r p-3"
+         class="h-content border-gray-light fixed top-14 left-0 flex w-2/10 flex-col space-y-5 overflow-auto border-r p-3"
       >
          <div class="bio border-gray-light border-b-2 wrap-break-word">
-            <h2 class="text-3xl font-extrabold">Intro</h2>
-            <h3 class="text-gray-dark mb-2 text-lg">{{ user }}</h3>
-            {% if profile.bio %}
-               <p class="mb-2">{{ profile.bio }}</p>
+            <h2 class="text-3xl font-extrabold mb-2">Intro</h2>
+            <h3 class="mb-4 text-xl">{{ user }}</h3>
+            {% if user.bio %}
+               <p class="mb-2">{{ user.bio }}</p>
             {% endif %}
          </div>
-         <div class="flex flex-col justify-start space-y-3 wrap-break-word">
-            {% if profile.birthday %}
-               <div>
-                  <i
-                     class="fa-solid fa-cake-candles float-start mr-2 inline-block w-2/10 translate-y-1"
-                  ></i>
-                  <p class="inline-block w-9/10">{{ profile.birthday|date:"d F" }}</p>
+         <div class="flex flex-col justify-start space-y-8 wrap-break-word">
+            {% if user.birthday %}
+               <div class="flex">
+                  <i class="fa-solid fa-cake-candles translate-y-0.5"></i>
+                  <p class="ml-2 overflow-hidden">{{ user.birthday|date:"d F" }}</p>
                </div>
             {% endif %}
 
-            {% if profile.address %}
-               <div>
-                  <i
-                     class="fa-solid fa-location-dot float-start mr-2 inline-block w-2/10 translate-y-1"
-                  ></i>
-                  <p class="inline-block w-9/10">{{ profile.address }}</p>
+            {% if user.address %}
+               <div class="flex">
+                  <i class="fa-solid fa-location-dot translate-y-0.5"></i>
+                  <p class="ml-2 overflow-hidden">{{ user.address }}</p>
                </div>
             {% endif %}
 
-            {% if profile.education %}
-               <div>
-                  <i
-                     class="fa-solid fa-graduation-cap float-start mr-2 inline-block w-2/10 translate-y-1"
-                  ></i>
-                  <p class="inline-block w-9/10">{{ profile.education }}</p>
+            {% if user.education %}
+               <div class="flex">
+                  <i class="fa-solid fa-graduation-cap translate-y-0.5"></i>
+                  <p class="ml-2 overflow-hidden">{{ user.education }}</p>
                </div>
             {% endif %}
 
-            {% if profile.work %}
-               <div>
-                  <i
-                     class="fa-solid fa-briefcase float-start mr-2 inline-block w-2/10 translate-y-1"
-                  ></i>
-                  <p class="inline-block w-9/10">{{ profile.work }}</p>
+            {% if user.work %}
+               <div class="flex">
+                  <i class="fa-solid fa-briefcase translate-y-0.5"></i>
+                  <p class="ml-2 overflow-hidden">{{ user.work }}</p>
                </div>
             {% endif %}
 
-            {% if profile.link %}
-               <div>
-                  <i class="fa-solid fa-link float-start mr-2 inline-block w-2/10 translate-y-1">
-                  </i>
-                  <a href="{{ profile.link }}" target="_blank" class="inline-block w-9/10 underline"
-                     >{{ profile.link }}</a
-                  >
+            {% if user.link %}
+               <div class="flex">
+                  <i class="fa-solid fa-link translate-y-0.5"> </i>
+                  <a href="{{ user.link }}" target="_blank" class="ml-2 overflow-hidden">{{ user.link }}</a>
                </div>
             {% endif %}
          </div>

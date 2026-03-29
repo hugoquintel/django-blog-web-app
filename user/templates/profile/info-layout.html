@@ -1,0 +1,76 @@
+{% extends "layouts/profile-layout.html" %}
+{% load static %}
+
+{% block content %}
+   <div class="ml-[20%] flex w-8/10 flex-col items-center pt-25">
+      <div class="flex w-8/10 justify-start space-x-5">
+         <img
+            class="border-gray-light h-37 w-37 rounded-full border"
+            {% if user.picture %}
+               src="{{ user.picture.url }}"
+            {% else %}
+               src="{% static "img/stock_pfp.jpg" %}"
+            {% endif %}
+            alt="{{ user.username }} profile picture"
+         />
+         <div class="info wrap-break-word">
+            <p class="name text-xl font-bold">{{ user.username }}</p>
+            <p class="username">{{ user.get_full_name }}</p>
+            {% if user == request.user %}
+               <c-button
+                  tag="a"
+                  href="{% url 'user:edit-profile' partial=None %}"
+                  bg-color="bg-theme-light"
+                  padding="p-1.5"
+                  extra-classes="border-gray-light my-2.5 inline-block border font-semibold"
+               >
+                  <i class="fa-solid fa-pen"></i> Edit profile
+               </c-button>
+            {% else %}
+               {% include "interaction/follow.html" with user_to_follow_id=user.id is_followed=is_followed extra_classes="my-2.5" %}
+            {% endif %}
+
+            <div class="flex space-x-5 text-sm">
+               <div class="flex flex-col items-center justify-center">
+                  <p class="font-bold">Posts</p>
+                  <p>{{ user.blog_count }}</p>
+               </div>
+               <div class="flex flex-col items-center justify-center">
+                  <p class="font-bold">Followings</p>
+                  <p>{{ user.following_count }}</p>
+               </div>
+               <div class="flex flex-col items-center justify-center">
+                  <p class="font-bold">Followers</p>
+                  <p>{{ user.follower_count }}</p>
+               </div>
+            </div>
+         </div>
+      </div>
+
+      <form
+         x-data="{profileTabForm: $el, URL: '{% url "user:profile" user_id=user.id partial="profile_content" %}', 
+                  currentTab: new URLSearchParams(location.search).get('tab') || 'posts'}"
+         hx-target="#profile-content"
+         hx-swap="show:none"
+         hx-push-url="true"
+         class="border-gray-light my-8 flex w-8/10 items-center justify-center border-b"
+      >
+         {% for tab in tabs %}
+            <c-tab
+               id="{{ tab }}"
+               value="{{ tab }}"
+               name="tab"
+               text="{{ tab|capfirst }}"
+               x-model="currentTab"
+               x-class="currentTab === '{{ tab }}' ? 'bg-theme-base text-white pointer-events-none' : 'hover:bg-gray-light';
+                        await $nextTick(); $el.classList.remove('bg-theme-base', 'text-white', 'pointer-events-none');"
+               x-change="htmx.ajax('GET', URL, {source: profileTabForm})"
+            />
+         {% endfor %}
+      </form>
+      <span id="profile-content" class="flex w-full justify-center">
+         {% block profile_content %}
+         {% endblock profile_content %}
+      </span>
+   </div>
+{% endblock content %}

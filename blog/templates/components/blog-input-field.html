@@ -1,0 +1,10 @@
+{% load widget_tweaks %}
+
+{% if field.errors %}
+   {% for error in field.errors %}
+      <c-message message="{{ error }}" type="error" extra-classes="{{ error_classes }}" />
+   {% endfor %}
+{% endif %}
+{% with extra_attrs=extra_attrs %}
+   {% render_field field|attr:extra_attrs class+=field_classes %}
+{% endwith %}

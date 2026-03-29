@@ -1,12 +1,10 @@
 from django import forms
 from blog.models import Blog, BlogSection
-from django.forms import BaseInlineFormSet
 from django.forms.models import inlineformset_factory
 
 from blog.validators import blog_validators, blog_section_validators
 
 
-# Form for signing up
 class CreateBlogForm(forms.ModelForm):
     title = forms.CharField(
         max_length=100,
@@ -63,17 +61,13 @@ class CreateBlogSectionForm(forms.ModelForm):
     )
     content.widget.attrs.pop("cols", None)
     content.widget.attrs.pop("rows", None)
-
+    picture_delete = forms.BooleanField(
+        required=False, widget=forms.CheckboxInput(attrs={"class": "hidden"})
+    )
     picture = forms.ImageField(
         required=False,
         widget=forms.FileInput(attrs={"class": "hidden"}),
     )
-    # picture_delete = forms.CharField(widget=forms.HiddenInput())
-
-    picture_delete = forms.BooleanField(
-        required=False, widget=forms.CheckboxInput(attrs={"class": "hidden"})
-    )
-
     picture_title = forms.CharField(
         required=False,
         widget=forms.TextInput(
@@ -87,6 +81,12 @@ class CreateBlogSectionForm(forms.ModelForm):
     class Meta:
         model = BlogSection
         fields = ("title", "content", "picture", "picture_title")
+
+    def clean(self):
+        data = super().clean()
+        if data.get("picture_delete"):
+            data["picture"], data["picture_title"] = "", ""
+        return data
 
 
 BlogSectionFormSet = inlineformset_factory(

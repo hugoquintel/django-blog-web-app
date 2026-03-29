@@ -72,6 +72,7 @@ TEMPLATES = [
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
+                "django.template.context_processors.debug",
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
@@ -124,16 +125,19 @@ USE_I18N = True
 
 USE_TZ = True
 
+MAX_SUBCOMMENTS = 3
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
-
 STATIC_URL = "static/"
 STATIC_ROOT = BASE_DIR / "assets"
 STATICFILES_DIRS = [BASE_DIR / "config/static"]
 
 MEDIA_URL = "media/"
 MEDIA_ROOT = BASE_DIR / "media"
+
+# Extending the base User model
+AUTH_USER_MODEL = "user.User"
 
 # cotton config
 COTTON_DIR = "components"

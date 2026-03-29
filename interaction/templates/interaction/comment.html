@@ -1,0 +1,91 @@
+{% if comment_count %}
+   <a
+      id="comment-count"
+      hx-swap-oob="true"
+      href="#comments"
+      class="inline-flex cursor-pointer items-center"
+   >
+      <i class="fa-regular fa-comment"></i>
+      <p class="ml-0.5">{{ comment_count }}</p>
+   </a>
+{% endif %}
+
+<div
+   id="comment-{{ comment.id }}"
+   x-data="{replyURL: '{% url 'interaction:reply-comment' level=comment.level blog_id=blog_id comment_id=comment.id %}',
+            lastEle: (lvlLastEle[{{ comment.level }} - 1] || $el), thisEle: $el, lastBottom: 0, thisTop: 0,
+            updatePos(){
+               this.lastBottom = this.lastEle.getBoundingClientRect().bottom;
+               this.thisTop = this.thisEle.getBoundingClientRect().top;
+            }}"
+   {% if comment.is_added %}
+      x-init="lastEle = document.getElementById('comment-{{ comment.parent_id }}'); updatePos()"
+   {% else %}
+      x-init="
+      {% if comment.level == 0 %}
+         lvlLastEle={};
+      {% endif %}
+      lvlLastEle[{{ comment.level }}] = thisEle; updatePos()"
+   {% endif %}
+   x-resize="updatePos()"
+   @htmx:after-swap.window="updatePos()"
+   {% if render_next %}
+      hx-get="{% url 'blog:detail' blog_id=blog_id root_depth=root_depth comment_id=0 partial='comments' %}?page={{ comments.next_page_number }}"
+      hx-trigger="revealed" hx-swap="afterend"
+   {% endif %}
+   class="{% if comment.level != 0 %}
+      {{ tailwind_comment_spaces.padding_left|get_item:comment.level }}
+      {{ tailwind_comment_spaces.before_position_left|get_item:comment.level }}
+      relative ml-2 flex flex-col pt-5 before:absolute before:top-0 before:rounded-bl-md
+      before:border-b-2 before:border-l-2 before:border-gray-300 before:pt-10 before:pl-5
+   {% else %}
+      pt-10
+   {% endif %} space-y-1"
+>
+   <div
+      class="{{ tailwind_comment_spaces.position_left|get_item:comment.level }} absolute border-l-2 border-gray-300"
+      :style="{top: `-${thisTop - lastBottom}px`,
+               height: `${thisTop - lastBottom}px`}"
+   ></div>
+   <c-user-card :user="comment.user" extra-classes="w-fit" img-size="h-10 w-10" />
+   <p class="bg-gray-light rounded-lg p-2 text-sm wrap-break-word">{{ comment.content }}</p>
+   <div class="flex items-center justify-between">
+      <div class="space-x-2 text-sm">
+         {% include "interaction/like.html" with instance_model="comment" instance=comment is_liked=comment.is_liked %}
+         <span class="inline-flex">
+            <button
+               @click="URL = replyURL; reply = true; commenter = '{{ comment.user.username }}';
+               {% if comment.level < max_subcomments %}
+                  $refs.commentForm.setAttribute('hx-push-url', 'false')
+               {% else %}
+                  $refs.commentForm.setAttribute('hx-push-url', 'true')"
+               {% endif %}"
+               class="cursor-pointer hover:opacity-50"
+            >
+               <i class="fa-regular fa-comment"></i>
+            </button>
+            <p class="ml-0.5">{{ comment.numchild }}</p>
+         </span>
+      </div>
+      <div class="text-gray-dark text-xs">
+         {{ comment.created_at|date:"M d, Y" }}
+         {% if comment.created_at != comment.updated_at %}
+            <strong>(Editted)</strong>
+         {% endif %}
+      </div>
+   </div>
+   {% if comment.level >= max_subcomments and comment.numchild %}
+      <div
+         class="relative ml-2 pt-5 pl-5 before:absolute before:top-0 before:left-0 before:rounded-bl-md before:border-b-2 before:border-l-2 before:border-gray-300 before:pt-10 before:pl-5"
+      >
+         <a
+            href="{% url 'blog:detail' blog_id=blog_id root_depth=comment.depth comment_id=comment.id partial='comments' %}"
+            hx-target="#comments"
+            hx-swap="innerHTML"
+            class="text-theme-base ml-2 block w-fit translate-y-[25%] text-lg font-semibold hover:underline"
+         >
+            Go to thread
+         </a>
+      </div>
+   {% endif %}
+</div>

@@ -1,20 +1,22 @@
 <{{ tag|default:"button" }}
-   {% if for %}
+   {% if tag == 'a' %}
+      href="{{ href }}"
+   {% elif tag == 'label' %}
       for="{{ for }}"
    {% else %}
       type="{{ type|default:"button" }}"
    {% endif %}
-   {% if onclick %}
-      onclick="{{ onclick }}"
-   {% endif %}
    class="{{ bg_color }} {{ text_color }} {{ font_size|default:"text-sm" }} {{ padding|default:"px-2 py-1.5" }} {{ extra_classes }} cursor-pointer rounded-md hover:opacity-(--hover-opacity)"
-   {{ extra_attrs }}
-   {% for attr in x_attrs %}
-      {{ attr }} = {{ x_attrs|get_item:attr }}
+
+   {% if x_click %}
+      @click="{{ x_click }}"
+   {% endif %}
+
+   {% comment %} extra_attrs is a dict {% endcomment %}
+   {% for attr in extra_attrs %}
+      {{ attr }} = "{{ extra_attrs|get_item:attr }}"
    {% endfor %}
-   {% for event in x_events %}
-      {{ event }}={{ x_events|get_item:event }}
-   {% endfor %}
+
 >
    {{ slot }}
 </{{ tag|default:"button" }}>

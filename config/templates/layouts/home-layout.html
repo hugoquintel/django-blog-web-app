@@ -1,31 +1,26 @@
 {% extends "layouts/main-layout.html" %}
 {% block title %}Home{% endblock title %}
 {% block body %}
-   <!-- Header/Banner -->
-   {% block header %}
-      <c-header is-login />
-   {% endblock header %}
-   <!-- Header/Banner -->
-
    <!-- Left side bar -->
    {% block left_sidebar %}
       <div
-         class="left-sidebar h-content border-gray-light fixed top-14 left-0 flex w-2/10 flex-col justify-between border-r p-3"
+         class="h-content border-gray-light fixed top-14 left-0 flex w-2/10 flex-col justify-between border-r p-3"
       >
-         <div class="search h-60">
-            <div class="search-bar">
+         <div class="h-60">
+            <div>
                <form
-                  action=""
+                  action="{% url "user:search" %}"
+                  method="get"
+                  hx-push-url="false"
+                  hx-trigger="keyup changed delay:500ms"
+                  hx-target="#search-result"
                   class="border-gray-base flex h-8 items-center justify-between rounded-full border"
                >
                   <input
+                     name="query"
+                     placeholder="Search people"
                      class="ml-3 h-full w-9/11 focus:outline-none"
-                     type="text"
-                     placeholder="Search"
                   />
-                  <button class="mr-1 cursor-pointer text-xs hover:opacity-50">
-                     <i class="fa-solid fa-circle-xmark"></i>
-                  </button>
                   <button
                      class="hover:bg-gray-light border-gray-base h-full cursor-pointer rounded-r-full border-l px-1.5"
                      type="submit"
@@ -34,61 +29,33 @@
                   </button>
                </form>
             </div>
-            <ul class="my-1 max-h-60 overflow-y-auto rounded-lg shadow-lg" role="list">
-               <li class="p-2">
-                  <a href="" class="hover:bg-gray-light flex rounded-lg p-1">
-                     <img
-                        class="border-gray-base h-10 w-10 rounded-full border"
-                        src="https://cdn.pixabay.com/photo/2024/05/26/10/15/bird-8788491_1280.jpg"
-                        alt=""
-                     />
-                     <div class="ml-3 overflow-hidden">
-                        <p class="line-clamp-1 text-sm font-medium text-black">
-                           Full name Fullasdsadsa name Full name Full name Full name
-                        </p>
-                        <p class="text-gray-dark line-clamp-1 text-sm">
-                           Heyo ajso asdadw bangalore asdsadsad
-                        </p>
-                     </div>
-                  </a>
-               </li>
-
-               <li class="p-2">
-                  <a href="" class="hover:bg-gray-light flex rounded-lg p-1">
-                     <img
-                        class="border-gray-base h-10 w-10 rounded-full border"
-                        src="https://cdn.pixabay.com/photo/2024/05/26/10/15/bird-8788491_1280.jpg"
-                        alt=""
-                     />
-                     <div class="ml-3 overflow-hidden">
-                        <p class="line-clamp-1 text-sm font-medium text-black">
-                           Full name Fullasdsadsa name Full name Full name Full name
-                        </p>
-                        <p class="text-gray-dark line-clamp-1 text-sm">
-                           Heyo ajso asdadw bangalore asdsadsad
-                        </p>
-                     </div>
-                  </a>
-               </li>
+            <ul id="search-result" class="max-h-60 overflow-y-auto rounded-lg shadow-lg">
+               {% include "user/user-search.html" %}
             </ul>
          </div>
 
-         <div class="utilities flex flex-col justify-between">
-            <a class="hover:bg-gray-light rounded-lg p-2 text-lg font-bold" href=""
-               ><i class="fa-solid fa-bookmark mr-2"></i>Saved posts</a
-            >
+         <div class="flex flex-col justify-between">
             <a class="hover:bg-gray-light rounded-lg p-2 text-lg font-bold" href="">
                <i class="fa-solid fa-heart mr-2"></i>Liked posts</a
             >
-            <a class="hover:bg-gray-light rounded-lg p-2 text-lg font-bold" href=""
-               ><i class="fa-solid fa-people-group mr-2"></i>People</a
+            <a
+               class="hover:bg-gray-light rounded-lg p-2 text-lg font-bold"
+               href="{% url "user:profile" user_id=request.user.id partial=None %}?tab=saved"
             >
+               <i class="fa-solid fa-bookmark mr-2"></i>Saved posts
+            </a>
+            <a
+               class="hover:bg-gray-light rounded-lg p-2 text-lg font-bold"
+               href="{% url "user:profile" user_id=request.user.id partial=None %}?tab=people"
+            >
+               <i class="fa-solid fa-people-group mr-2"></i>People
+            </a>
             <a
                class="hover:bg-gray-light flex items-center rounded-lg p-2 text-lg font-bold"
-               href=""
+               href="{% url "user:profile" user_id=request.user.id partial=None %}"
             >
-               <i class="fa-solid fa-user mr-2"></i>Profile</a
-            >
+               <i class="fa-solid fa-user mr-2"></i>Profile
+            </a>
          </div>
 
          <div class="log-out flex flex-col">

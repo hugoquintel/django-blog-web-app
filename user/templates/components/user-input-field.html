@@ -1,0 +1,21 @@
+{% load widget_tweaks %}
+
+<span class="{{ extra_classes }}">
+   {% if field.errors %}
+      {% for error in field.errors %}
+         <c-message message="{{ error }}" type="error" extra-classes="{{ error_classes }}" />
+      {% endfor %}
+   {% endif %}
+   <label
+      for="{{ field.auto_id }}"
+      class="{% if display == 'block' %}
+         block
+      {% endif %} font-semibold"
+   >
+      {{ label }}
+   </label>
+   {% comment %}the input x-bind attribute must follow django-widget-tweaks attr format{% endcomment %}
+   {% with extra_attrs=extra_attrs %}
+      {% render_field field|attr:extra_attrs class+=field_classes %}
+   {% endwith %}
+</span>

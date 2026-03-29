@@ -1,11 +1,12 @@
 from django import forms
-from django.contrib.auth.models import User
-from user.models import Profile
+from django.contrib.auth import get_user_model
 from user.validators import (
     signin_validators,
     signup_validators,
     edit_profile_validators,
 )
+
+User = get_user_model()
 
 
 # Form for signing in
@@ -20,9 +21,9 @@ class SigninForm(forms.Form):
         super().__init__(*args, **kwargs)
         for field in self.fields:
             self.fields[f"{field}"].required = True
-            self.fields[f"{field}"].widget.attrs["class"] = (
-                "rounded-sm border px-2 py-1 focus:outline-0"
-            )
+            self.fields[f"{field}"].widget.attrs[
+                "class"
+            ] = "rounded-sm border px-2 py-1 focus:outline-0"
 
     def clean(self):
         cleaned_data = super().clean()
@@ -55,9 +56,9 @@ class SignupForm(forms.Form):
         super().__init__(*args, **kwargs)
         for field in self.fields:
             self.fields[f"{field}"].required = True
-            self.fields[f"{field}"].widget.attrs["class"] = (
-                "rounded-sm border px-2 py-1 focus:outline-0"
-            )
+            self.fields[f"{field}"].widget.attrs[
+                "class"
+            ] = "rounded-sm border px-2 py-1 focus:outline-0"
 
     def clean(self):
         cleaned_data = super().clean()
@@ -117,7 +118,7 @@ class EditProfileForm(forms.ModelForm):
     picture = forms.ImageField(widget=forms.FileInput())
 
     class Meta:
-        model = Profile
+        model = User
         fields = (
             "first_name",
             "last_name",
@@ -134,6 +135,6 @@ class EditProfileForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         for field in self.fields:
             self.fields[f"{field}"].required = False
-            self.fields[f"{field}"].widget.attrs["class"] = (
-                "rounded-sm border px-2 py-1 focus:outline-0"
-            )
+            self.fields[f"{field}"].widget.attrs[
+                "class"
+            ] = "rounded-sm border px-2 py-1 focus:outline-0"

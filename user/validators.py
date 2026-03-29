@@ -1,7 +1,8 @@
-from django.contrib.auth.models import User
+from datetime import datetime
+from django.utils import timezone
+from profanity_check import predict
 from django.core.exceptions import ValidationError
 from dateutil.relativedelta import relativedelta
-from django.utils import timezone
 from django.core.validators import (
     RegexValidator,
     EmailValidator,
@@ -10,8 +11,7 @@ from django.core.validators import (
     URLValidator,
 )
 
-from datetime import datetime
-from profanity_check import predict
+from config.utils import User
 
 
 # Sign in validators
@@ -116,9 +116,9 @@ LinkValidator = URLValidator(message="Invalid link")
 
 
 def DateValidator(value):
-    start_date = timezone.now().date()
-    end_date = datetime.strptime(value, "%Y-%m-%d").date()
-    year_diff = relativedelta(start_date, end_date).years
+    curr_date = timezone.now().date()
+    input_date = datetime.strptime(value, "%Y-%m-%d").date()
+    year_diff = relativedelta(curr_date, input_date).years
     if year_diff <= 0:
         raise ValidationError("Your birthday is invalid.")
     if year_diff > 150:

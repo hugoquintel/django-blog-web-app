@@ -1,23 +1,23 @@
 {% extends "layouts/home-layout.html" %}
-{% load static %}
+{% load widget_tweaks %}
 
 {% block content %}
    {% partialdef content inline %}
       <div
-         x-data='{addURL: "{% url "interaction:add-comment" blog_id=blog.id %}", URL: "", reply: false, commenter: ""}'
+         id="content"
+         x-data="{handleEnter(e){if (!e.shiftKey) {e.preventDefault(); $refs.commentBtn.click()}},
+                  addURL: '{% url 'interaction:add-comment' level=0 blog_id=blog.id %}',
+                  URL: '', reply: false, commenter: ''}"
          x-init="URL = addURL;"
          class="mx-auto mb-25 flex w-6/10 flex-col items-center space-y-20 pt-25"
       >
          <div class="mb-2 flex w-8/10 items-center space-x-6">
-            <c-user-card :user="blog.user" extra-classes="w-fit" img-size="h-10 w-10" />
-            <c-button
-               bg-color="bg-theme-light"
-               text-color="text-gray-dark"
-               extra-classes="font-semibold"
-            >
-               Follow
-            </c-button>
-            {% if blog.user == user %}
+            <c-user-card :user="blog.user" img-size="h-10 w-10" extra-classes="w-fit" />
+            {% if blog.user != request.user %}
+               {% include "interaction/follow.html" with user_to_follow_id=blog.user.id is_followed=is_followed %}
+            {% endif %}
+
+            {% if blog.user == request.user %}
                <div
                   x-data="{showDropdown: false, showDelete: false, canClickOutside: true}"
                   class="ml-auto"
@@ -37,7 +37,8 @@
                      </div>
                      <div class="flex justify-center">
                         <button
-                           hx-target="body"
+                           hx-target="#content"
+                           hx-swap="outerHTML"
                            hx-headers='{"x-csrftoken": "{{ csrf_token }}"}'
                            hx-post="{% url "blog:delete" blog_id=blog.id %}"
                            hx-push-url="true"
@@ -63,14 +64,17 @@
                   </button>
                   <ul
                      x-show="showDropdown"
-                     @click.outside="canClickOutside && (showDropdown = false)"
+                     @click.outside="if (canClickOutside) showDropdown = false"
                      class="border-gray-light absolute mt-1 -translate-x-[75%] space-y-1 rounded-md border p-2 text-sm shadow-lg"
                   >
                      <li class="hover:bg-gray-light cursor-pointer rounded-md">
-                        <button class="flex cursor-pointer items-center px-1.5 py-1">
+                        <a
+                           href="{% url "blog:edit" blog_id=blog.id partial=None %}"
+                           class="flex cursor-pointer items-center px-1.5 py-1"
+                        >
                            <i class="fa-solid fa-pen mr-1"></i>
                            <p>Edit</p>
-                        </button>
+                        </a>
                      </li>
                      <li class="hover:bg-gray-light cursor-pointer rounded-md">
                         <button
@@ -86,22 +90,20 @@
             {% endif %}
          </div>
 
-         <div class="text-gray-dark mb-2 flex w-8/10 space-x-4 px-1 text-xs">
-            <span
-               ><i class="fa-solid fa-pen"></i>{{ blog.created_at|date:"M d, Y" }}</span
-            >
+         <div class="text-gray-dark mb-2 flex w-8/10 space-x-4 text-xs">
+            <span><i class="fa-solid fa-pen"></i>{{ blog.created_at|date:"M d, Y" }}</span>
             {% if blog.created_at != blog.updated_at %}
                <span><strong>Editted:</strong> {{ blog.updated_at|date:"M d, Y" }}</span>
             {% endif %}
          </div>
 
-         <div class="flex w-8/10 items-center space-x-2 px-1">
-            {% include "interaction/like.html" with instance=blog %}
-            <a href="#comment" class="inline-flex cursor-pointer items-center">
+         <div class="flex w-8/10 items-center space-x-2">
+            {% include "interaction/like.html" with instance_model="blog" instance=blog is_liked=is_liked %}
+            <a id="comment-count" href="#comments" class="inline-flex cursor-pointer items-center">
                <i class="fa-regular fa-comment"></i>
-               <p class="ml-0.5">{{ blog.comment_set.count }}</p>
+               <p class="ml-0.5">{{ blog.comment_count }}</p>
             </a>
-            {% include "interaction/save.html" with blog=blog %}
+            {% include "interaction/save.html" with blog=blog is_saved=is_saved %}
          </div>
 
          <div class="border-gray-light w-8/10 space-y-10 border-b pb-4">
@@ -111,7 +113,7 @@
                   {{ blog.description }}
                </h2>
             </div>
-            {% for blog_section in blog.blogsection_set.all %}
+            {% for blog_section in blog.sections.all %}
                <div class="space-y-2">
                   <h3 class="text-2xl font-bold">
                      {{ forloop.counter }}. {{ blog_section.title|capfirst }}
@@ -139,58 +141,79 @@
          </div>
 
          {% comment %}Start: comment section{% endcomment %}
-         <div id="comment" class="relative w-8/10">
-            {% partialdef comment inline %}
-               <h1 class="text-xl font-bold">Comments</h1>
-               <div>
-                  {% for comment in root_comments %}
-                     <c-comment :blog="blog" :comment="comment" />
-                  {% endfor %}
-               </div>
-               <div class="bg-gray-light fixed bottom-0 left-[25%] w-1/2 rounded-t-sm px-2 py-2">
-                  <form
-                     hx-target="this"
-                     hx-push-url="false"
-                     hx-swap="show:none"
-                     @submit="htmx.ajax('POST', URL, {source: $el})"
-                     class="flex w-full flex-col rounded-md bg-white"
-                  >
-                     {% partialdef comment-form inline %}
-                        {% csrf_token %}
-                        <div
-                           x-show="reply"
-                           class="bg-gray-light flex justify-between px-2 pb-1 text-sm"
-                        >
-                           <p>
-                              Replying to
-                              <span x-text="commenter" class="font-semibold italic"></span>
-                           </p>
-                           <button
-                              type="button"
-                              @click="URL = addURL; reply = false;"
-                              class="cursor-pointer hover:underline"
-                           >
-                              Cancel
-                           </button>
-                        </div>
-                        {{ form.content }}
-                        <div class="flex justify-between px-2 py-1.5">
-                           <div class="flex items-center text-lg">
-                              <i class="fa-regular fa-image"></i>
-                           </div>
-                           <c-button
-                              type="submit"
-                              bg-color="bg-theme-dark"
-                              text-color="text-white"
-                              padding="px-2 py-1"
-                           >
-                              Comment
-                           </c-button>
-                        </div>
-                     {% endpartialdef comment-form %}
-                  </form>
-               </div>
-            {% endpartialdef comment %}
+         <h1 class="mb-5 w-8/10 text-xl font-bold">Comments</h1>
+         <div id="comments" x-data="{lvlLastEle: {}}" class="relative w-8/10">
+            {% partialdef comments inline %}
+               {% if is_detailed %}
+                  <div class="flex justify-between">
+                     <button
+                        @click="history.go(-{{ thread_depth }})"
+                        class="text-theme-base mt-5 w-fit cursor-pointer text-lg font-semibold hover:underline"
+                     >
+                        Go to main discussion
+                     </button>
+
+                     <button
+                        @click="history.back()"
+                        class="text-theme-base mt-5 w-fit cursor-pointer text-lg font-semibold hover:underline"
+                     >
+                        Go back
+                     </button>
+                  </div>
+               {% endif %}
+
+               {% for comment in comments %}
+                  {% if forloop.last and comments.has_next %}
+                     {% include "interaction/comment.html" with blog_id=blog.id comment=comment render_next=True %}
+                  {% else %}
+                     {% include "interaction/comment.html" with blog_id=blog.id comment=comment %}
+                  {% endif %}
+               {% endfor %}
+            {% endpartialdef comments %}
+         </div>
+         <div class="bg-gray-light fixed bottom-0 left-[25%] w-1/2 rounded-t-sm px-2 py-2">
+            <form
+               id="comment-form"
+               x-ref="commentForm"
+               hx-swap="show:none"
+               hx-target="#comments"
+               hx-push-url="false"
+               class="flex w-full flex-col rounded-md bg-white"
+            >
+               {% partialdef comment_form inline %}
+                  {% csrf_token %}
+                  <div x-show="reply" class="bg-gray-light flex justify-between px-2 pb-1 text-sm">
+                     <p>
+                        Replying to
+                        <span x-text="commenter" class="font-semibold italic"></span>
+                     </p>
+                     <button
+                        type="button"
+                        @click="URL = addURL; reply = false; $refs.commentForm.setAttribute('hx-push-url', 'false')"
+                        class="cursor-pointer hover:underline"
+                     >
+                        Cancel
+                     </button>
+                  </div>
+                  {% render_field form.content|attr:'x-autosize' class+="max-h-[50vh]" @keydown.enter='handleEnter($event)' %}
+
+                  <div class="flex justify-between px-2 py-1.5">
+                     <div class="flex items-center text-lg">
+                        <i class="fa-regular fa-image"></i>
+                     </div>
+                     <c-button
+                        type="button"
+                        bg-color="bg-theme-dark"
+                        text-color="text-white"
+                        padding="px-2 py-1"
+                        x-click="htmx.ajax('POST', URL, {source: $refs.commentForm}); $refs.commentForm.reset()"
+                        :extra-attrs="{'x-ref': 'commentBtn'}"
+                     >
+                        Comment
+                     </c-button>
+                  </div>
+               {% endpartialdef comment_form %}
+            </form>
          </div>
          {% comment %}End: comment section{% endcomment %}
       </div>

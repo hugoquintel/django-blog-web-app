@@ -1,42 +1,49 @@
 {% extends "layouts/auth-layout.html" %}
-{% load widget_tweaks %}
 
 {% block title %}Sign in{% endblock title %}
 
 {% block left_content %}
    <div
-      class="left-sidebar min-h-content bg-theme-light relative top-14 left-0 flex w-2/5 flex-col items-center justify-center overflow-auto"
+      class="min-h-content bg-theme-light relative top-14 left-0 flex w-2/5 flex-col items-center justify-center overflow-auto"
    >
       <div id="auth-form" class="bg-theme-light flex w-6/10 flex-col justify-center space-y-2 py-6">
-         {% partialdef auth-form inline %}
-            <h1 class="text-text-black mb-6 text-3xl font-extrabold">Sign in to your account</h1>
+         {% partialdef auth_form inline %}
+            <h1 class="mb-6 text-3xl font-extrabold">Sign in to your account</h1>
             <form
                method="post"
-               action="{% url "user:sign-in" partial="auth-form" %}"
+               action="{% url "user:sign-in" partial="auth_form" %}"
+               x-data="{showPassword: false}"
                hx-target="#auth-form"
                hx-push-url="false"
-               x-data="{showPassword:false}"
                class="flex flex-col"
             >
                {% csrf_token %}
-
                {% if messages %}
                   {% for message in messages %}
-                     <c-message message="{{ message }}" />
+                     <c-message message="{{ message }}" type="success" extra-classes="mb-8 w-fit" />
                   {% endfor %}
                {% endif %}
+               
+               <c-user-input-field
+                  :field="form.username"
+                  label="Username:"
+                  extra-classes="mb-6"
+                  field-classes="w-full"
+                  error-classes="mb-2"
+               />
 
-               <c-error :field="form.username" />
-               <label for="{{ form.username.auto_id }}" class="font-semibold">Username:</label>
-               {% render_field form.username class+="mb-6" %}
-
-               <c-error :field="form.password" />
-               <label for="{{ form.password.auto_id }}" class="font-semibold">Password:</label>
-               {% render_field form.password ::type="showPassword?`text`:`password`" class+="mb-2" %}
+               <c-user-input-field
+                  :field="form.password"
+                  label="Password:"
+                  extra-classes="mb-2"
+                  field-classes="w-full"
+                  error-classes="mb-2"
+                  extra-attrs="::type = showPassword?'text'::'password' autocomplete = on"
+               />
 
                <div class="mb-3 flex items-center space-x-1 text-sm">
                   <input id="show-password" type="checkbox" x-model="showPassword" />
-                  <label for="show-password">show password</label>
+                  <label for="show-password" class="select-none">show password</label>
                </div>
 
                <c-button
@@ -51,15 +58,15 @@
             </form>
 
             <div class="flex items-center justify-center text-sm">
-               <p>Don't have an account?&nbsp;</p>
+               <p class="mr-1">Don't have an account?</p>
                <a
-                  href="{% url "user:sign-up" partial="auth-form" %}"
+                  href="{% url "user:sign-up" partial="auth_form" %}"
                   hx-target="#auth-form"
-                  class="text-theme font-semibold underline"
+                  class="font-semibold underline"
                   >Sign up here</a
                >
             </div>
-         {% endpartialdef auth-form %}
+         {% endpartialdef auth_form %}
       </div>
    </div>
 {% endblock left_content %}

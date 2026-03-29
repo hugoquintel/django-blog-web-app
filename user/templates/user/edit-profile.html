@@ -3,35 +3,33 @@
 {% load static %}
 
 {% block content %}
-   <div class="mb-4 ml-90 pt-15">
-      <div class="mb-5 flex items-center justify-center text-3xl">
-         <a href="{% url "blog:index" %}" class="text-gray-dark">
-            <i class="fa-solid fa-arrow-left p-1 hover:underline"></i>
-         </a>
-         <h1 class="w-9/10 text-center font-extrabold">Edit profile</h1>
-      </div>
-      <div class="flex w-full items-center justify-center">
-         <form
-            method="post"
-            action="{% url "user:edit-profile" %}"
-            enctype="multipart/form-data"
-            hx-push-url="false"
-            class="flex w-8/10 justify-start"
-         >
+   <div class="ml-[20%] w-6/10 pt-17">
+      <h1 class="mb-5 flex justify-center text-center text-3xl font-extrabold">Edit profile</h1>
+
+      <form
+         method="post"
+         action="{% url "user:edit-profile" partial=None %}"
+         enctype="multipart/form-data"
+         hx-push-url="false"
+         class="mx-auto flex w-8/10 justify-center"
+      >
+         {% partialdef edit_profile inline %}
             {% csrf_token %}
             <div
-               x-data="{src: '{% static 'img/stock_pfp.jpg' %}', file: '', text: 'Upload image', icon: '<i class=\'fa-solid fa-upload\'></i> '}"
-               {% if user.profile.picture %}
-                  x-init="src = '{{ user.profile.picture.url }}'"
-               {% endif %}
-               class="profile-img flex flex-col items-center justify-start space-x-15"
+               x-data="{src: {% if user.picture %}
+                  '{{ user.picture.url }}'
+               {% else %}
+                  '{% static 'img/stock_pfp.jpg' %}'
+               {% endif %}, 
+                        text: 'Upload image', 
+                        icon: '<i class=\'fa-solid fa-upload\'></i>'}"
+               class="flex flex-col items-center justify-start space-x-15"
             >
                <span class="block h-37 w-37">
                   <img
-                     id="profile_picture"
                      class="border-gray-base size-full rounded-full border"
                      :src="src"
-                     alt=""
+                     alt="{{ user.username }} profile picture"
                   />
                </span>
 
@@ -41,27 +39,77 @@
                   bg-color="bg-theme-light"
                   text-color="text-gray-dark"
                   extra-classes="mt-2.5 truncate font-semibold w-32"
-                  extra-attrs="x-html=`${icon}${text}`"
+                  :extra-attrs="{'x-html': '`${icon} ${text}`'}"
                >
+                  <i class="fa-solid fa-upload"></i>
                </c-button>
 
-               {% render_field form.picture @change="file = $el.files[0]; if (file) src = URL.createObjectURL(file); text = file.name; $nextTick(() => { URL.revokeObjectURL(src) })" class="hidden" %}
+               {% render_field form.picture @change="[src, fileName] = $store.utils.displayImage($el); text = fileName" class="hidden" %}
             </div>
 
-            <div class="profile-detail flex flex-col items-start space-y-4">
+            <div class="flex flex-col items-start space-y-4">
                {% if message %}
-                  <c-message message="{{ message }}" />
+                  <c-message message="{{ message }}" type="success" />
                {% endif %}
                <div class="flex space-x-5">
-                  <c-profile-field :field="form.first_name" label="First name" />
-                  <c-profile-field :field="form.last_name" label="Last name" />
+                  <c-user-input-field
+                     :field="form.first_name"
+                     label="First name"
+                     display="block"
+                     error-classes="mb-2"
+                  />
+                  <c-user-input-field
+                     :field="form.last_name"
+                     label="Last name"
+                     display="block"
+                     error-classes="mb-2"
+                  />
                </div>
-               <c-profile-field :field="form.birthday" label="Birthday" />
-               <c-profile-field :field="form.address" label="Address" extra-classes="w-full" />
-               <c-profile-field :field="form.education" label="Education" extra-classes="w-full" />
-               <c-profile-field :field="form.work" label="Work" extra-classes="w-full" />
-               <c-profile-field :field="form.link" label="Link" extra-classes="w-full" />
-               <c-profile-field :field="form.bio" label="Bio" extra-classes="w-full" />
+               <c-user-input-field
+                  :field="form.birthday"
+                  label="Birthday"
+                  display="block"
+                  error-classes="mb-2"
+               />
+               <c-user-input-field
+                  :field="form.address"
+                  label="Address"
+                  display="block"
+                  extra-classes="w-full"
+                  field-classes="w-full"
+                  error-classes="mb-2"
+               />
+               <c-user-input-field
+                  :field="form.education"
+                  label="Education"
+                  display="block"
+                  extra-classes="w-full"
+                  field-classes="w-full"
+                  error-classes="mb-2"
+               />
+               <c-user-input-field
+                  :field="form.work"
+                  label="Work"
+                  display="block"
+                  extra-classes="w-full"
+                  field-classes="w-full"
+                  error-classes="mb-2"
+               />
+               <c-user-input-field
+                  :field="form.link"
+                  label="Link"
+                  display="block"
+                  extra-classes="w-full"
+                  field-classes="w-full"
+                  error-classes="mb-2"
+               />
+               <c-user-input-field
+                  :field="form.bio"
+                  label="Bio"
+                  display="block"
+                  extra-classes="w-full"
+                  field-classes="w-full"
+               />
                <c-button
                   type="submit"
                   bg-color="bg-theme-base"
@@ -73,7 +121,7 @@
                   Save
                </c-button>
             </div>
-         </form>
-      </div>
+         {% endpartialdef edit_profile %}
+      </form>
    </div>
 {% endblock content %}

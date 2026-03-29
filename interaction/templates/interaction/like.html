@@ -1,18 +1,19 @@
 <form
    method="post"
-   {% comment %} add if {% endcomment %}
-   action="{% url "interaction:like" blog_id=blog.id %}"
+   action="{% url "interaction:like" instance_model=instance_model instance_id=instance.id %}"
    hx-push-url="false"
    hx-target="this"
-   hx-swap="outerHTML show:none"
+   hx-swap="show:none"
    hx-trigger="click"
    class="inline-flex cursor-pointer items-center"
 >
-   {% csrf_token %}
-   {% if user in blog.liked_by.all %}
-      <i class="fa-solid fa-heart"></i>
-   {% else %}
-      <i class="fa-regular fa-heart"></i>
-   {% endif %}
-   <p class="ml-0.5">{{ blog.liked_by.count }}</p>
+   {% partialdef like inline %}
+      {% csrf_token %}
+      {% if is_liked %}
+         <i class="fa-solid fa-heart"></i>
+      {% else %}
+         <i class="fa-regular fa-heart"></i>
+      {% endif %}
+      <p class="ml-0.5">{{ instance.like_count }}</p>
+   {% endpartialdef like %}
 </form>

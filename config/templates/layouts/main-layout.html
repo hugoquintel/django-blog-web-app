@@ -8,17 +8,25 @@
       <link rel="stylesheet" href="{% static "css/tailwind/output.css" %}" />
       <link rel="stylesheet" href="{% static "css/fonts/fontawesome/css/all.min.css" %}" />
       <link rel="stylesheet" href="{% static "css/fonts/font.css" %}" />
+      {% comment %}htmx packages{% endcomment %}
       {% htmx_script %}
-      <script src="{% static 'js/autosize.js' %}" defer></script>
-      <script src="{% static 'js/alpine.js' %}" defer></script>
-      <script src="{% static 'js/htmxConfig.js' %}" async></script>
+      {% if debug %}
+         <script src="{% static 'js/htmx/logger.js' %}" defer></script>
+      {% endif %}
+      <script src="{% static 'js/htmx/alpine-morph.js' %}" defer></script>
+
+      {% comment %}alpine packages{% endcomment %}
+      <script src="{% static 'js/alpine/global.js' %}" defer></script>
+      <script src="{% static 'js/alpine/autosize.js' %}" defer></script>
+      <script src="{% static 'js/alpine/resize.js' %}" defer></script>
+      <script src="{% static 'js/alpine/morph.js' %}" defer></script>
+      <script src="{% static 'js/alpine/alpine.js' %}" defer></script>
+
       <title>{% block title %}{% endblock title %}</title>
    </head>
-
-   <body hx-boost="true">
-      <div class="wrapper flex">
-         {% block body %}
-         {% endblock body %}
-      </div>
+   <body hx-boost="true" class="bg-off-white">
+      <c-header />
+      {% block body %}
+      {% endblock body %}
    </body>
 </html>
