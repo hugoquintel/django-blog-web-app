@@ -138,3 +138,7 @@ class EditProfileForm(forms.ModelForm):
             self.fields[f"{field}"].widget.attrs[
                 "class"
             ] = "rounded-sm border px-2 py-1 focus:outline-0"
+
+    def clean_birthday(self):
+        birthday = self.cleaned_data.get("birthday")
+        return None if birthday == "" else birthday

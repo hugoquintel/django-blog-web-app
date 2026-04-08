@@ -41,16 +41,23 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+]
+
+THIRD_PARTY_APPS = [
     "django_htmx",
     "django_cotton",
     "django_cleanup.apps.CleanupConfig",
     "widget_tweaks",
     "treebeard",
-    # own
+]
+
+PROJECT_APPS = [
     "user.apps.UserConfig",
     "blog.apps.BlogConfig",
     "interaction.apps.InteractionConfig",
 ]
+
+INSTALLED_APPS += THIRD_PARTY_APPS + PROJECT_APPS
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -76,6 +83,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "config.context_processors.GET_params_str",
             ]
         },
     },
@@ -119,7 +127,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = "Asia/Bangkok"
+TIME_ZONE = "UTC"
 
 USE_I18N = True
 

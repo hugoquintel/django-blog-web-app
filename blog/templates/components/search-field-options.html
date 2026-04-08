@@ -1,0 +1,21 @@
+<div class="flex justify-between p-2">
+   <h2 class="mr-5 py-0.5 font-semibold">{{ field.label }}:</h2>
+   <div class="space-x-5">
+      {% for group_name, options in field.field.choices %}
+         <select
+            title="{{ group_name }}"
+            {% with group_name=group_name.split %}
+               name="{{ field.label|lower }}_{{ group_name|join:"_"|lower }}"
+            {% endwith %}
+            class="bg-theme-base appearance-none rounded-sm px-2 py-0.5 outline-none"
+         >
+            <option disabled selected hidden>{{ group_name }} ▾</option>
+            {% for value, label, tooltip in options %}
+               <option value="{{ value }}" class="font-semibold" title="{{ tooltip }}">
+                  {{ label }}
+               </option>
+            {% endfor %}
+         </select>
+      {% endfor %}
+   </div>
+</div>

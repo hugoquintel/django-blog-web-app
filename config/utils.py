@@ -1,6 +1,8 @@
+from datetime import datetime
+from django.utils import timezone
 from django.urls import reverse_lazy
-from django.core.paginator import Paginator
 from django.contrib.auth import get_user_model
+from django.core.paginator import Paginator, EmptyPage
 
 User = get_user_model()
 
@@ -18,6 +20,20 @@ tailwind_comment_spaces = {
 }
 
 
-def paginate_and_get_page(queryset, page, instances_per_page=10):
+def paginate_and_get_page(queryset, page, instances_per_page=20):
     paginator = Paginator(queryset, instances_per_page)
-    return paginator.get_page(page)
+    try:
+        return paginator.page(page)
+    except EmptyPage:
+        return queryset  # empty queryset
+
+
+def get_snapshot(GET_request):
+    snapshot = GET_request.get("snapshot", timezone.now())
+    try:
+        snapshot = timezone.make_aware(
+            datetime.strptime(snapshot.replace(".", ""), "%B %d, %Y, %I:%M %p")
+        )
+    except TypeError:
+        pass
+    return snapshot

@@ -29,10 +29,6 @@
    {% endif %}
    x-resize="updatePos()"
    @htmx:after-swap.window="updatePos()"
-   {% if render_next %}
-      hx-get="{% url 'blog:detail' blog_id=blog_id root_depth=root_depth comment_id=0 partial='comments' %}?page={{ comments.next_page_number }}"
-      hx-trigger="revealed" hx-swap="afterend"
-   {% endif %}
    class="{% if comment.level != 0 %}
       {{ tailwind_comment_spaces.padding_left|get_item:comment.level }}
       {{ tailwind_comment_spaces.before_position_left|get_item:comment.level }}

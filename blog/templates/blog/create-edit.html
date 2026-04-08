@@ -4,7 +4,7 @@
 {% block body %}
    <c-header />
    <!-- Content -->
-   <div class="content mx-auto w-8/10 pt-20">
+   <div class="mx-auto w-8/10 pt-20">
       <h1 class="mb-10 flex justify-center text-3xl font-extrabold">
          {% if blog_id %}
             Edit your blog
@@ -13,9 +13,7 @@
          {% endif %}
       </h1>
 
-      <div
-         x-data="{totalForm: {{ formset_blog_sections|length }}}"
-      >
+      <div x-data="{totalForm: {{ formset_blog_sections|length }}}">
          <form
             method="post"
             {% if blog_id %}

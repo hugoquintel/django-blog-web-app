@@ -10,13 +10,7 @@
             <ul class="max-h-60 space-y-5 overflow-y-auto">
                {% partialdef followings inline %}
                   {% for following in followings %}
-                     <li
-                        {% if forloop.last and followings.has_next %}
-                           hx-get="{% url 'user:profile' user_id=user.id partial='followings' %}?tab={{ current_tab }}&page={{ followings.next_page_number }}"
-                           hx-trigger="revealed" hx-swap="afterend"
-                        {% endif %}
-                        class="mx-auto flex items-center justify-between"
-                     >
+                     <li class="mx-auto flex items-center justify-between">
                         <c-user-card
                            :user="following"
                            img-size="h-10 w-10"
@@ -24,6 +18,13 @@
                         />
                         {% include "interaction/follow.html" with user_to_follow_id=following.id is_followed=following.is_followed %}
                      </li>
+                     {% if forloop.last and followings.has_next %}
+                        <template
+                           hx-get="{% url 'user:profile' user_id=user.id partial='followings' %}?{{ GET_params_str }}&page={{ followings.next_page_number }}"
+                           hx-trigger="revealed"
+                           hx-swap="afterend"
+                        ></template>
+                     {% endif %}
                   {% endfor %}
                {% endpartialdef followings %}
             </ul>
@@ -36,13 +37,7 @@
             <ul class="max-h-60 space-y-5 overflow-y-auto">
                {% partialdef followers inline %}
                   {% for follower in followers %}
-                     <li
-                        {% if forloop.last and followers.has_next %}
-                           hx-get="{% url 'user:profile' user_id=user.id partial='followers' %}?tab={{ current_tab }}&page={{ followers.next_page_number }}"
-                           hx-trigger="revealed" hx-swap="afterend"
-                        {% endif %}
-                        class="mx-auto flex items-center justify-between"
-                     >
+                     <li class="mx-auto flex items-center justify-between">
                         <c-user-card
                            :user="follower"
                            img-size="h-10 w-10"
@@ -52,6 +47,13 @@
                            {% include "interaction/follow.html" with user_to_follow_id=follower.id is_followed=follower.is_followed %}
                         {% endif %}
                      </li>
+                     {% if forloop.last and followers.has_next %}
+                        <template
+                           hx-get="{% url 'user:profile' user_id=user.id partial='followers' %}?{{ GET_params_str }}page={{ followers.next_page_number }}"
+                           hx-trigger="revealed"
+                           hx-swap="afterend"
+                        ></template>
+                     {% endif %}
                   {% endfor %}
                {% endpartialdef followers %}
             </ul>

@@ -1,0 +1,108 @@
+{% extends "layouts/home-layout.html" %}
+
+{% block content %}
+   {% partialdef content inline %}
+      <div id="content" class="mx-auto mb-25 flex w-6/10 flex-col items-center pt-25">
+         <div class="w-8/10 space-y-25">
+            <form
+               x-data="{open: false}"
+               hx-target="#result"
+               hx-push-url="false"
+               hx-trigger="submit delay:500ms"
+               hx-swap="show:none"
+               action="{% url 'blog:search' partial='result' %}"
+            >
+               <div class="relative">
+                  <c-button
+                     text-color="text-white"
+                     bg-color="bg-theme-base"
+                     font-size="text-base"
+                     padding="px-2 py-1.5"
+                     x-click="open = !open"
+                  >
+                     Options <i class="fa-solid fa-filter"></i>
+                  </c-button>
+
+                  <div
+                     x-show="open"
+                     @click.outside="open = false"
+                     class="bg-theme-light absolute left-0 mt-2 items-center rounded-sm shadow-lg"
+                  >
+                     <c-search-field-options :field="form.people" />
+                     <c-search-field-options :field="form.posts" />
+                  </div>
+               </div>
+               <div
+                  class="border-gray-base mt-4 flex w-full items-center rounded-full border focus:outline-none"
+               >
+                  {{ form.search_input }}
+                  <button
+                     class="hover:bg-gray-light border-gray-light h-full cursor-pointer rounded-r-full border-l px-2 py-1"
+                     type="submit"
+                  >
+                     <i class="fa-solid fa-magnifying-glass"></i>
+                  </button>
+               </div>
+            </form>
+            <h1 class="mb-10 text-3xl font-bold">Results:</h1>
+            <div id="result">
+               {% partialdef result inline %}
+
+                  {% if not users and not blogs %}
+                     <h2 class="mx-auto w-fit text-3xl">No result</h2>
+                  {% endif %}
+
+                  {% if users %}
+                     <div class="border-gray-light border-b pb-10">
+                        <h2 class="mb-5 text-2xl font-semibold">People:</h2>
+                        <ul class="max-h-100 space-y-7 overflow-y-auto">
+                           {% partialdef users inline %}
+                              {% for user in users %}
+                                 <li class="mx-auto flex items-center justify-between">
+                                    <c-user-card
+                                       :user="user"
+                                       img-size="h-10 w-10"
+                                       show-bio
+                                       extra-classes="w-3/4 overflow-hidden"
+                                    />
+                                    {% include "interaction/follow.html" with user_to_follow_id=user.id %}
+                                 </li>
+                                 {% if forloop.last and users.has_next %}
+                                    <template
+                                       hx-get="{% url 'blog:search' partial='users' %}?{{ GET_params_str }}&page={{ users.next_page_number }}&snapshot={{ snapshot }}"
+                                       hx-trigger="revealed"
+                                       hx-swap="afterend"
+                                    >
+                                    </template>
+                                 {% endif %}
+                              {% endfor %}
+                           {% endpartialdef users %}
+                        </ul>
+                     </div>
+                  {% endif %}
+
+                  {% if blogs %}
+                     <div class="mt-10">
+                        <h2 class="mb-5 text-2xl font-semibold">Posts:</h2>
+                        <ul class="space-y-7 overflow-y-auto">
+                           {% partialdef blogs inline %}
+                              {% for blog in blogs %}
+                                 <c-blog-card :blog="blog" />
+                                 {% if forloop.last and blogs.has_next %}
+                                    <template
+                                       hx-get="{% url 'blog:search' partial='blogs' %}?{{ GET_params_str }}&page={{ blogs.next_page_number }}&snapshot={{ snapshot }}"
+                                       hx-trigger="revealed"
+                                       hx-swap="afterend"
+                                    ></template>
+                                 {% endif %}
+                              {% endfor %}
+                           {% endpartialdef blogs %}
+                        </ul>
+                     </div>
+                  {% endif %}
+               {% endpartialdef result %}
+            </div>
+         </div>
+      </div>
+   {% endpartialdef content %}
+{% endblock content %}

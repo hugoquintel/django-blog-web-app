@@ -15,5 +15,5 @@ urlpatterns = [
     path("edit-profile/<str:partial>/", edit_profile_view, name="edit-profile"),
     path("sign-out/", signout_view, name="sign-out"),
     path("search/", search_view, name="search"),
-    path("<int:user_id>/profile/<str:partial>/", profile_view, name="profile"),
+    path("<int:user_id>/<str:partial>/", profile_view, name="profile"),
 ]

@@ -92,3 +92,59 @@ class CreateBlogSectionForm(forms.ModelForm):
 BlogSectionFormSet = inlineformset_factory(
     Blog, BlogSection, form=CreateBlogSectionForm, can_delete=True, extra=0
 )
+
+
+class SearchForm(forms.Form):
+    BASE_CHOICES = {
+        "Filter": [
+            ("none", "None", ""),
+            ("all", "All", ""),
+            ("following", "Following", ""),
+        ],
+        "Match": [
+            ("contain", "Contain", ""),
+            ("exact", "Exact", ""),
+        ],
+    }
+    PEOPLE_CHOICES = {
+        **BASE_CHOICES,
+        "Search by": [
+            ("username", "Name", ""),
+            ("bio", "Bio", ""),
+        ],
+        "Order by": [
+            ("popularity", "Popularity", ""),
+            ("date", "Date", "Date joined"),
+        ],
+    }
+    POSTS_CHOICES = {
+        **BASE_CHOICES,
+        "Search by": [
+            ("title", "Title", ""),
+            ("description", "Description", ""),
+            ("content", "Content", ""),
+        ],
+        "Order by": [
+            ("popularity", "Popularity", ""),
+            ("date", "Date", "Date posted"),
+        ],
+    }
+
+    people = forms.ChoiceField(
+        choices=PEOPLE_CHOICES, required=False, widget=forms.Select()
+    )
+    posts = forms.ChoiceField(
+        choices=POSTS_CHOICES, required=False, widget=forms.Select()
+    )
+
+    search_input = forms.CharField(
+        required=False,
+        widget=forms.TextInput(
+            attrs={
+                "placeholder": "Search",
+                "class": "grow px-4 py-1 focus:outline-none",
+            },
+        ),
+    )
+
+    # break it down into multiple stuffs

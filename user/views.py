@@ -1,12 +1,13 @@
 from django.urls import reverse
 from django.contrib import messages
 from django.http import HttpResponse
+from django.core.exceptions import PermissionDenied
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, logout, authenticate
 from django.shortcuts import render, redirect, get_object_or_404
 
 from user.forms import SigninForm, SignupForm, EditProfileForm
-from config.utils import User, sign_in_url, paginate_and_get_page
+from config.utils import User, sign_in_url, paginate_and_get_page, get_snapshot
 
 
 # Create your views here.
@@ -76,10 +77,8 @@ def edit_profile_view(request, partial=None):
     if request.method == "POST":
         form = EditProfileForm(request.POST, request.FILES, instance=request.user)
         if form.is_valid():
-            user = form.save(commit=False)
-            user.birthday = user.birthday or None
+            form.save()
             context["message"] = "Profile updated!"
-            user.save()
     else:
         form = EditProfileForm(instance=request.user)
     context["form"] = form
@@ -90,17 +89,25 @@ def edit_profile_view(request, partial=None):
 
 def search_view(request):
     query = request.GET.get("query").strip()
-    result = (
-        User.objects.filter(username__icontains=query) if query else User.objects.none()
-    ).order_by("id")
-    result = paginate_and_get_page(result, request.GET.get("page", 1))
-    context = {"query": query, "result": result}
+    snapshot = get_snapshot(request.GET)
+    if query:
+        result = User.objects.filter(
+            username__icontains=query, date_joined__lt=snapshot
+        )
+    else:
+        result = User.objects.none()
+    result = result.order_by("id")
+    context = {
+        "result": paginate_and_get_page(result, request.GET.get("page", 1)),
+        "snapshot": snapshot,
+    }
     return render(request, "user/user-search.html", context)
 
 
 def profile_view(request, user_id, partial="None"):
     current_tab = request.GET.get("tab")
     user = get_object_or_404(User, id=user_id)
+    page = request.GET.get("page", 1)
     tabs = (
         ("posts", "saved", "people", "settings")
         if request.user == user
@@ -113,6 +120,8 @@ def profile_view(request, user_id, partial="None"):
 
     match current_tab:
         case "saved":
+            if user != request.user:
+                raise PermissionDenied()
             template = "profile/profile-posts.html"
             blogs = user.saved_blogs
         case "people":
@@ -121,21 +130,21 @@ def profile_view(request, user_id, partial="None"):
                 user.followings.with_is_followed(user=request.user).order_by("id"),
                 user.followers.with_is_followed(user=request.user).order_by("id"),
             )
-            followings, followers = (
-                paginate_and_get_page(followings, request.GET.get("page", 1)),
-                paginate_and_get_page(followers, request.GET.get("page", 1)),
+            context["followings"], context["followers"] = (
+                paginate_and_get_page(followings, page),
+                paginate_and_get_page(followers, page),
             )
-            context["followings"], context["followers"] = followings, followers
         case "settings":
+            if user != request.user:
+                raise PermissionDenied()
             template = "profile/profile-settings.html"
         case _:
             template = "profile/profile-posts.html"
             blogs = user.blogs
 
     if blogs:
-        blogs = blogs.with_is_liked_and_saved(user=user).order_by("-created_at")
-        blogs = paginate_and_get_page(blogs, request.GET.get("page", 1))
-        context["blogs"] = blogs
+        blogs = blogs.with_is_liked_and_saved(user=user).order_by("-created_at", "-id")
+        context["blogs"] = paginate_and_get_page(blogs, page)
 
     if request.htmx and partial != "None":
         template = f"{template}#{partial}"

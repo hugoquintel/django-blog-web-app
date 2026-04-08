@@ -11,21 +11,28 @@ from django.shortcuts import render, get_object_or_404, redirect
 from blog.models import Blog
 from interaction.models import Comment
 from interaction.forms import CommentForm
-from blog.forms import CreateBlogForm, BlogSectionFormSet
-from config.utils import tailwind_comment_spaces, sign_in_url, paginate_and_get_page
+from blog.forms import CreateBlogForm, BlogSectionFormSet, SearchForm
+from config.utils import (
+    User,
+    tailwind_comment_spaces,
+    sign_in_url,
+    paginate_and_get_page,
+    get_snapshot,
+)
 
 
 @login_required(login_url=sign_in_url)
 def index_view(request, partial=None):
-    # ask AI if this is an optimal way to do infinite scroll
     template = "blog/index.html"
     user = request.user
+    snapshot = get_snapshot(request.GET)
+
     current_filter, current_sort = (
         request.GET.get("filter", "following"),
         request.GET.get("sort", "popularity"),
     )
 
-    filter_conditions = {}
+    filter_conditions = {"created_at__lt": snapshot}
     if current_filter == "following":
         filter_conditions["user__in"] = user.followings.all()
 
@@ -33,18 +40,19 @@ def index_view(request, partial=None):
         Blog.objects.with_is_liked_and_saved(
             user=user, filter_conditions=filter_conditions
         )
-        .order_by("-like_count" if current_sort == "popularity" else "-created_at")
+        .order_by(
+            "-like_count" if current_sort == "popularity" else "-created_at", "-id"
+        )
         .select_related("user")
     )
 
-    blogs = paginate_and_get_page(blogs, request.GET.get("page", 1))
-
     context = {
-        "blogs": blogs,
+        "blogs": paginate_and_get_page(blogs, request.GET.get("page", 1)),
         "filter_types": ("following", "all"),
         "sort_types": ("popularity", "date"),
         "current_filter": current_filter,
         "current_sort": current_sort,
+        "snapshot": snapshot,
     }
     if request.htmx and partial != "None":
         template = f"{template}#{partial}"
@@ -55,11 +63,14 @@ def detail_view(request, root_depth, blog_id, comment_id=None, partial=None):
     template = "blog/detail.html"
     user = request.user
     blog = get_object_or_404(Blog, id=blog_id)
+    snapshot = get_snapshot(request.GET)
+
     extra_annotations = {
         "level": F("depth") - 1 if root_depth == 1 else F("depth") % root_depth,
         "is_added": Value(False),
     }
     filter_conditions = {
+        "created_at__lt": snapshot,
         "blog": blog,
         "depth__lte": root_depth + settings.MAX_SUBCOMMENTS,
     }
@@ -73,16 +84,16 @@ def detail_view(request, root_depth, blog_id, comment_id=None, partial=None):
         extra_annotations=extra_annotations,
         filter_conditions=filter_conditions,
     )
-    comments = paginate_and_get_page(comments, request.GET.get("page", 1))
     context = {
         "blog": blog,
         "is_liked": user in blog.liked_by.all(),
         "is_followed": user in blog.user.followers.all(),
-        "comments": comments,
+        "comments": paginate_and_get_page(comments, request.GET.get("page", 1)),
         "form": CommentForm(),
         "root_depth": root_depth,
         "max_subcomments": settings.MAX_SUBCOMMENTS,
         "tailwind_comment_spaces": tailwind_comment_spaces,
+        "snapshot": snapshot,
     }
     if comment_id:
         context["is_detailed"] = True
@@ -103,9 +114,8 @@ def create_edit_view(request, blog_id=None, partial=None):
             CreateBlogForm(request.POST, instance=blog),
             BlogSectionFormSet(request.POST, request.FILES, instance=blog),
         )
-        del_ids = {
-            int(del_id) for del_id in request.POST.getlist("delete_ids") if del_id
-        }
+        del_ids_list = request.POST.getlist("delete_ids")
+        del_ids = {int(del_id) for del_id in del_ids_list if del_id}
 
         if form_blog.is_valid() and formset_blog_sections.is_valid():
             user = request.user
@@ -139,7 +149,7 @@ def create_edit_view(request, blog_id=None, partial=None):
             CreateBlogForm(instance=blog),
             BlogSectionFormSet(instance=blog),
         )
-        
+
     context["form_blog"] = form_blog
     context["formset_blog_sections"] = formset_blog_sections
     context["management_form"] = formset_blog_sections.management_form
@@ -167,3 +177,83 @@ def delete_view(request, blog_id):
     user.blog_count = user.blogs.count()
     user.save(update_fields=["blog_count"])
     return redirect("blog:index", partial="content")
+
+
+def search_view(request, partial=None):
+    template = "blog/search-advanced.html"
+    user = request.user
+    snapshot = get_snapshot(request.GET)
+    options = {"filter", "search_by", "match", "order_by"}
+    form = SearchForm(request.GET)
+    queries = form.data
+    people_queries, posts_queries = (
+        {option: queries.get(f"people_{option}") for option in options},
+        {option: queries.get(f"posts_{option}") for option in options},
+    )
+    user_input = queries.get("search_input")
+
+    # people
+    people_conditions = {"date_joined__lt": snapshot}
+    if people_queries["filter"] in (None, "none") or user_input == "":
+        users = User.objects.none()
+    else:
+        if people_queries["filter"] == "following":
+            people_conditions["followers"] = user
+        search_by, match_case = (
+            ("bio" if people_queries["search_by"] == "bio" else "username"),
+            ("__iexact" if people_queries["match"] == "exact" else "__icontains"),
+        )
+        people_conditions[f"{search_by}{match_case}"] = user_input
+        order_by = (
+            "-follower_count"
+            if people_queries["order_by"] == "popularity"
+            else "-date_joined"
+        )
+        users = (
+            User.objects.with_is_followed(
+                user=user, filter_conditions=people_conditions
+            )
+            .exclude(username=user.username)
+            .order_by(order_by)
+        )
+
+    # posts
+    posts_conditions = {"created_at__lt": snapshot}
+    if posts_queries["filter"] in (None, "none") or user_input == "":
+        blogs = Blog.objects.none()
+    else:
+        if posts_queries["filter"] == "following":
+            posts_conditions["user__followers"] = user
+
+        match_case = "__iexact" if posts_queries["match"] == "exact" else "__icontains"
+
+        if posts_queries["search_by"] == "description":
+            search_by = "description"
+        elif posts_queries["search_by"] == "title":
+            search_by = "title"
+        else:
+            search_by = "sections__content"
+
+        posts_conditions[f"{search_by}{match_case}"] = user_input
+        order_by = (
+            "-like_count"
+            if posts_queries["order_by"] == "popularity"
+            else "-created_at"
+        )
+        blogs = (
+            Blog.objects.with_is_liked_and_saved(
+                user=user, filter_conditions=posts_conditions
+            )
+            .order_by(order_by)
+            .select_related("user")
+        )
+
+    context = {
+        "form": form,
+        "users": paginate_and_get_page(users, request.GET.get("page", 1)),
+        "blogs": paginate_and_get_page(blogs, request.GET.get("page", 1)),
+        "snapshot": snapshot,
+    }
+    if request.htmx and partial != "None":
+        template = f"{template}#{partial}"
+    return render(request, template, context)

@@ -105,7 +105,7 @@ def comment_view(request, level, blog_id, comment_id=None):
                 headers["HX-Retarget"] = "#comments"
                 headers["HX-Reswap"] = "afterbegin show:none"
                 new_comment.parent_id = new_comment.id
-
+            form.save_m2m()
             new_comment.is_added = True
             blog.comment_count = blog.comments.count()
             blog.save(update_fields=["comment_count"])

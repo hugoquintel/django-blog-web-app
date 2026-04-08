@@ -13,13 +13,11 @@
       {% if debug %}
          <script src="{% static 'js/htmx/logger.js' %}" defer></script>
       {% endif %}
-      <script src="{% static 'js/htmx/alpine-morph.js' %}" defer></script>
 
       {% comment %}alpine packages{% endcomment %}
       <script src="{% static 'js/alpine/global.js' %}" defer></script>
       <script src="{% static 'js/alpine/autosize.js' %}" defer></script>
       <script src="{% static 'js/alpine/resize.js' %}" defer></script>
-      <script src="{% static 'js/alpine/morph.js' %}" defer></script>
       <script src="{% static 'js/alpine/alpine.js' %}" defer></script>
 
       <title>{% block title %}{% endblock title %}</title>

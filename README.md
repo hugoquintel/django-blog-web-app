@@ -5,13 +5,12 @@ This is the first stage of devlopment
 
 ## TODO:
 - Optimization (doing)
-- fix blog index view
-- fix the go back on the comment
 - fix prettier
 - add htmx indicator
 - fix title for each page
+- pin every packages
 
 
 ## FEATURES TO IMPLEMENT:
 - notifications
-- search (advanced)
+- change password in profile setting tab

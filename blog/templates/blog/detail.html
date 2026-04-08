@@ -107,7 +107,7 @@
          </div>
 
          <div class="border-gray-light w-8/10 space-y-10 border-b pb-4">
-            <div class="space-y-2">
+            <div class="space-y-2 break-all">
                <h1 class="flex justify-center text-4xl font-bold">{{ blog.title }}</h1>
                <h2 class="text-gray-dark flex justify-center text-xl font-medium">
                   {{ blog.description }}
@@ -163,10 +163,13 @@
                {% endif %}
 
                {% for comment in comments %}
+                  {% include "interaction/comment.html" with blog_id=blog.id comment=comment %}
                   {% if forloop.last and comments.has_next %}
-                     {% include "interaction/comment.html" with blog_id=blog.id comment=comment render_next=True %}
-                  {% else %}
-                     {% include "interaction/comment.html" with blog_id=blog.id comment=comment %}
+                     <template
+                        hx-get="{% url 'blog:detail' blog_id=blog.id root_depth=root_depth comment_id=0 partial='comments' %}?{{ GET_params_str }}&page={{ comments.next_page_number }}&snapshot={{ snapshot }}"
+                        hx-trigger="revealed"
+                        hx-swap="afterend"
+                     ></template>
                   {% endif %}
                {% endfor %}
             {% endpartialdef comments %}

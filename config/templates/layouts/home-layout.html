@@ -21,12 +21,6 @@
                      placeholder="Search people"
                      class="ml-3 h-full w-9/11 focus:outline-none"
                   />
-                  <button
-                     class="hover:bg-gray-light border-gray-base h-full cursor-pointer rounded-r-full border-l px-1.5"
-                     type="submit"
-                  >
-                     <i class="fa-solid fa-magnifying-glass"></i>
-                  </button>
                </form>
             </div>
             <ul id="search-result" class="max-h-60 overflow-y-auto rounded-lg shadow-lg">
@@ -35,24 +29,29 @@
          </div>
 
          <div class="flex flex-col justify-between">
-            <a class="hover:bg-gray-light rounded-lg p-2 text-lg font-bold" href="">
-               <i class="fa-solid fa-heart mr-2"></i>Liked posts</a
-            >
             <a
+               href="{% url 'blog:search' partial='content' %}"
+               hx-target="#content"
+               hx-swap="outerHTML"
                class="hover:bg-gray-light rounded-lg p-2 text-lg font-bold"
-               href="{% url "user:profile" user_id=request.user.id partial=None %}?tab=saved"
+            >
+               <i class="fa-solid fa-magnifying-glass mr-2"></i>Advanced search
+            </a>
+            <a
+               href="{% url 'user:profile' user_id=request.user.id partial=None %}?tab=saved"
+               class="hover:bg-gray-light rounded-lg p-2 text-lg font-bold"
             >
                <i class="fa-solid fa-bookmark mr-2"></i>Saved posts
             </a>
             <a
+               href="{% url 'user:profile' user_id=request.user.id partial=None %}?tab=people"
                class="hover:bg-gray-light rounded-lg p-2 text-lg font-bold"
-               href="{% url "user:profile" user_id=request.user.id partial=None %}?tab=people"
             >
                <i class="fa-solid fa-people-group mr-2"></i>People
             </a>
             <a
+               href="{% url 'user:profile' user_id=request.user.id partial=None %}"
                class="hover:bg-gray-light flex items-center rounded-lg p-2 text-lg font-bold"
-               href="{% url "user:profile" user_id=request.user.id partial=None %}"
             >
                <i class="fa-solid fa-user mr-2"></i>Profile
             </a>
