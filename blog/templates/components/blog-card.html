@@ -7,7 +7,7 @@
       text-element-classes="hover:underline"
    />
    <a
-      href="{% url "blog:detail" root_depth=1 blog_id=blog.id comment_id=0 partial=None %}"
+      href="{{ blog.get_absolute_url }}"
       class="hover:bg-gray-light mb-2 flex justify-between rounded-lg p-1"
    >
       <div class="break-all">

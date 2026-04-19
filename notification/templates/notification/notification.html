@@ -1,0 +1,100 @@
+{% load static %}
+
+<li
+   id="notification-{{ notification.id }}"
+   class="{% if notification.is_seen %}
+      hover:bg-gray-light
+   {% else %}
+      bg-green-100
+   {% endif %} group relative flex cursor-pointer items-center space-x-4 rounded-sm p-2"
+   x-data="{showNotiDropdown: false}"
+   hx-headers='{"x-csrftoken": "{{ csrf_token }}"}'
+   hx-post="{% url 'notification:seen-redirect' noti_id=notification.id %}"
+   hx-target="body"
+>
+   {% csrf_token %}
+   <button
+      @click.stop.prevent="showNotiDropdown = !showNotiDropdown"
+      @mousedown.outside="showNotiDropdown = false"
+      :class="{ 'hidden': !showNotiDropdown }"
+      class="border-gray-light bg-off-white absolute top-0 right-0 bottom-0 my-auto mr-0 hidden size-7 cursor-pointer items-center justify-center rounded-full border group-hover:block hover:bg-gray-100"
+   >
+      <i class="fa-solid fa-ellipsis"></i>
+      <ul
+         x-show="showNotiDropdown"
+         class="border-gray-light bg-off-white absolute right-0 z-1 w-max overflow-visible rounded-sm border p-1 text-sm shadow-lg group-not-last:-bottom-1 group-not-last:translate-y-full group-last:-top-1 group-last:-translate-y-full"
+      >
+         <li
+            hx-headers='{"x-csrftoken": "{{ csrf_token }}"}'
+            hx-post="{% url 'notification:update' noti_id=notification.id %}"
+            hx-target="#notification-{{ notification.id }}"
+            hx-swap="outerHTML"
+            class="hover:bg-gray-light mb-1 rounded-sm p-1"
+         >
+            {% if notification.is_seen %}
+               Mark as unseen
+            {% else %}
+               Mark as seen
+            {% endif %}
+         </li>
+         <li
+            hx-headers='{"x-csrftoken": "{{ csrf_token }}"}'
+            hx-post="{% url 'notification:delete' noti_id=notification.id %}"
+            hx-target="#notification-{{ notification.id }}"
+            hx-swap="delete"
+            class="hover:bg-gray-light w-full rounded-sm p-1"
+         >
+            Delete
+         </li>
+      </ul>
+   </button>
+
+   <img
+      class="border-gray-base h-9 w-9 cursor-pointer rounded-full border"
+      {% if notification.sender.picture %}
+         src="{{ notification.sender.picture.url }}"
+      {% else %}
+         src= {% static "img/stock_pfp.jpg" %}
+      {% endif %}
+      alt="{{ notification.sender }} profile picture"
+   />
+   <div class="overflow-auto wrap-break-word">
+      {% if notification.notification_type == 'follow' %}
+         <p><span class="font-bold">{{ notification.sender }}</span> started following you</p>
+      {% elif notification.notification_type == 'blog_post' %}
+         <p>
+            <span class="font-bold">{{ notification.sender }}</span> posted
+            <span class="font-bold">{{ notification.blog }}</span>
+         </p>
+      {% elif notification.notification_type == 'blog_like' %}
+         <p>
+            <span class="font-bold">{{ notification.sender }}</span> liked your post
+            <span class="font-bold">{{ notification.blog }}</span>
+         </p>
+      {% elif notification.notification_type == 'comment_like' %}
+         <p>
+            <span class="font-bold">{{ notification.sender }}</span> liked your comment
+            <span class="font-bold">{{ notification.comment }}</span>
+         </p>
+      {% elif notification.notification_type == 'comment_add' %}
+         <p>
+            <span class="font-bold">{{ notification.sender }}</span> commented
+            <span class="font-bold">{{ notification.comment }}</span> in your post
+         </p>
+      {% elif notification.notification_type == 'comment_reply' %}
+         <p>
+            <span class="font-bold">{{ notification.sender }}</span> replied to you comment
+            <span class="font-bold">{{ notification.comment }}</span>
+         </p>
+      {% endif %}
+      <p class="text-sm">{{ notification.created_at|date:"F d, Y" }}</p>
+   </div>
+
+   {% if notification.blog.picture %}
+      <img
+         class="h-12 rounded-sm"
+         src="{{ notification.blog.picture.url }}"
+         alt="{{ notification.blog.picture }}"
+      />
+   {% endif %}
+</li>

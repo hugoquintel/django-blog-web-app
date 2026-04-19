@@ -55,6 +55,7 @@ PROJECT_APPS = [
     "user.apps.UserConfig",
     "blog.apps.BlogConfig",
     "interaction.apps.InteractionConfig",
+    "notification.apps.NotificationConfig",
 ]
 
 INSTALLED_APPS += THIRD_PARTY_APPS + PROJECT_APPS
@@ -84,6 +85,8 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
                 "config.context_processors.GET_params_str",
+                "config.context_processors.top_users",
+                "config.context_processors.notifications",
             ]
         },
     },
@@ -160,7 +163,5 @@ if DEBUG:
     ]
     MIDDLEWARE = ["debug_toolbar.middleware.DebugToolbarMiddleware"] + MIDDLEWARE
     INTERNAL_IPS = [
-        # ...
         "127.0.0.1",
-        # ...
     ]

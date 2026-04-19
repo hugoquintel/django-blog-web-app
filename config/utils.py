@@ -34,6 +34,10 @@ def get_snapshot(GET_request):
         snapshot = timezone.make_aware(
             datetime.strptime(snapshot.replace(".", ""), "%B %d, %Y, %I:%M %p")
         )
+    except ValueError:
+        snapshot = timezone.make_aware(
+            datetime.strptime(snapshot.replace(".", ""), "%B %d, %Y, %I %p")
+        )
     except TypeError:
         pass
     return snapshot

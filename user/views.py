@@ -2,6 +2,7 @@ from django.urls import reverse
 from django.contrib import messages
 from django.http import HttpResponse
 from django.core.exceptions import PermissionDenied
+from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, logout, authenticate
 from django.shortcuts import render, redirect, get_object_or_404
@@ -64,10 +65,10 @@ def signup_view(request, partial=None):
     return render(request, template, context)
 
 
+@require_POST
 def signout_view(request):
-    if request.method == "POST":
-        logout(request)
-        return redirect("user:sign-in", partial="None")
+    logout(request)
+    return redirect("user:sign-in", partial=None)
 
 
 @login_required(login_url=sign_in_url)
@@ -118,12 +119,14 @@ def profile_view(request, user_id, partial="None"):
     context["is_followed"] = True if request.user in user.followers.all() else False
     blogs = None
 
+    title = f"{user} profile"
     match current_tab:
         case "saved":
             if user != request.user:
                 raise PermissionDenied()
             template = "profile/profile-posts.html"
             blogs = user.saved_blogs
+            context["title"] = f"{title} - saved blogs"
         case "people":
             template = "profile/profile-people.html"
             followings, followers = (
@@ -134,13 +137,16 @@ def profile_view(request, user_id, partial="None"):
                 paginate_and_get_page(followings, page),
                 paginate_and_get_page(followers, page),
             )
+            context["title"] = f"{title} - people"
         case "settings":
             if user != request.user:
                 raise PermissionDenied()
             template = "profile/profile-settings.html"
+            context["title"] = f"{title} - settings"
         case _:
             template = "profile/profile-posts.html"
             blogs = user.blogs
+            context["title"] = f"{title} - blogs"
 
     if blogs:
         blogs = blogs.with_is_liked_and_saved(user=user).order_by("-created_at", "-id")

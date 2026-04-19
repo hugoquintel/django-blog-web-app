@@ -50,7 +50,8 @@
          {% include "interaction/like.html" with instance_model="comment" instance=comment is_liked=comment.is_liked %}
          <span class="inline-flex">
             <button
-               @click="URL = replyURL; reply = true; commenter = '{{ comment.user.username }}';
+               @click="URL = replyURL; reply = true; commenter = '{{ comment.user.username }}'; 
+               comment = '{{ comment.content|truncatechars:45 }}';
                {% if comment.level < max_subcomments %}
                   $refs.commentForm.setAttribute('hx-push-url', 'false')
                {% else %}

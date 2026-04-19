@@ -132,17 +132,7 @@ def create_edit_view(request, blog_id=None, partial=None):
             section_with_picture = blog.sections.exclude(picture__exact="").first()
             blog.picture = section_with_picture.picture if section_with_picture else ""
             blog.save(update_fields=["picture"])
-            headers = {
-                "HX-Location": reverse(
-                    "blog:detail",
-                    kwargs={
-                        "root_depth": 1,
-                        "blog_id": blog.id,
-                        "comment_id": 0,
-                        "partial": None,
-                    },
-                )
-            }
+            headers = {"HX-Location": blog.get_absolute_url()}
             return HttpResponse(headers=headers)
     else:
         form_blog, formset_blog_sections = (
@@ -250,6 +240,7 @@ def search_view(request, partial=None):
 
     context = {
         "form": form,
+        "user_input": user_input,
         "users": paginate_and_get_page(users, request.GET.get("page", 1)),
         "blogs": paginate_and_get_page(blogs, request.GET.get("page", 1)),
         "snapshot": snapshot,

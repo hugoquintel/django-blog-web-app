@@ -3,6 +3,7 @@
 
 {% block content %}
    {% partialdef content inline %}
+      <c-page-title>Home</c-page-title>
       <div id="content" class="mx-auto mb-25 flex w-6/10 flex-col items-center pt-25">
          <div class="border-gray-light mb-8 flex w-7/10 items-center justify-between border-b">
             <form
@@ -54,10 +55,12 @@
                         hx-get="{% url 'blog:index' partial='blogs' %}?{{ GET_params_str }}&page={{ blogs.next_page_number }}&snapshot={{ snapshot }}"
                         hx-trigger="revealed"
                         hx-swap="afterend"
+                        hx-indicator="#loader"
                      ></template>
                   {% endif %}
                {% endfor %}
             {% endpartialdef blogs %}
+            <c-loader size="size-4" />
          </div>
       </div>
    {% endpartialdef content %}

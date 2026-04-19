@@ -1,10 +1,12 @@
-from django.shortcuts import render, redirect, get_object_or_404
+from django.http import Http404
+from django.urls import reverse_lazy
+from django.core.exceptions import PermissionDenied
 from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
-from django.urls import reverse_lazy
-from django.http import Http404
+from django.shortcuts import render, redirect, get_object_or_404
 
 from blog.models import Blog
+from user.models import Follow
 from django.conf import settings
 from interaction.forms import CommentForm
 from interaction.models import Comment, Like
@@ -23,10 +25,10 @@ def like_view(request, instance_model, instance_id):
     context = {}
     instance = get_object_or_404(instance_dict[instance_model], id=instance_id)
     params = {instance_model: instance, "user": user}
-    if instance.liked_by.filter(id=user.id).exists():
+    try:
         Like.objects.get(**params).delete()
         context["is_liked"] = False
-    else:
+    except Like.DoesNotExist:
         Like.objects.create(**params)
         context["is_liked"] = True
     instance.like_count = instance.liked_by.count()
@@ -56,12 +58,14 @@ def follow_view(request, user_to_follow_id):
         request.user,
         get_object_or_404(User, id=user_to_follow_id),
     )
+    if current_user == user_to_follow:
+        raise PermissionDenied()
     context = {}
-    if current_user.followings.filter(id=user_to_follow.id).exists():
-        current_user.followings.remove(user_to_follow)
+    try:
+        Follow.objects.get(follower=current_user, following=user_to_follow).delete()
         context["is_followed"] = False
-    else:
-        current_user.followings.add(user_to_follow)
+    except Follow.DoesNotExist:
+        Follow.objects.create(follower=current_user, following=user_to_follow)
         context["is_followed"] = True
     current_user.following_count = current_user.followings.count()
     user_to_follow.follower_count = user_to_follow.followers.count()

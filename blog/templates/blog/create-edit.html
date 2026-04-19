@@ -2,14 +2,15 @@
 {% load widget_tweaks %}
 
 {% block body %}
-   <c-header />
    <!-- Content -->
    <div class="mx-auto w-8/10 pt-20">
       <h1 class="mb-10 flex justify-center text-3xl font-extrabold">
          {% if blog_id %}
             Edit your blog
+            <c-page-title>Edit blog - {{ form_blog.instance.title }}</c-page-title>
          {% else %}
             Write your blog
+            <c-page-title>New blog</c-page-title>
          {% endif %}
       </h1>
 

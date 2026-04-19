@@ -2,6 +2,7 @@
 
 {% block profile_content %}
    {% partialdef profile_content inline %}
+      <c-page-title>{{ title }}</c-page-title>
       <div id="blogs" class="w-8/10 space-y-10">
          {% partialdef blogs inline %}
             {% for blog in blogs %}
@@ -11,10 +12,12 @@
                      hx-get="{% url 'user:profile' user_id=user.id partial='blogs' %}?{{ GET_params_str }}&page={{ blogs.next_page_number }}"
                      hx-trigger="revealed"
                      hx-swap="afterend"
+                     hx-indicator="#blogs-loader"
                   ></template>
                {% endif %}
             {% endfor %}
          {% endpartialdef blogs %}
+         <c-loader id="blogs-loader" size="size-4" extra-classes="mt-2" />
       </div>
    {% endpartialdef profile_content %}
 {% endblock profile_content %}

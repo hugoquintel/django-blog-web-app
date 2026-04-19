@@ -2,6 +2,7 @@
 
 {% block content %}
    {% partialdef content inline %}
+      <c-page-title>Advanced search</c-page-title>
       <div id="content" class="mx-auto mb-25 flex w-6/10 flex-col items-center pt-25">
          <div class="w-8/10 space-y-25">
             <form
@@ -10,6 +11,7 @@
                hx-push-url="false"
                hx-trigger="submit delay:500ms"
                hx-swap="show:none"
+               hx-indicator="#loader"
                action="{% url 'blog:search' partial='result' %}"
             >
                <div class="relative">
@@ -43,10 +45,15 @@
                      <i class="fa-solid fa-magnifying-glass"></i>
                   </button>
                </div>
+               <c-loader size="size-4" extra-classes="mt-2" />
             </form>
+
             <h1 class="mb-10 text-3xl font-bold">Results:</h1>
             <div id="result">
                {% partialdef result inline %}
+                  {% if user_input %}
+                     <c-page-title>Results for: {{ user_input }}</c-page-title>
+                  {% endif %}
 
                   {% if not users and not blogs %}
                      <h2 class="mx-auto w-fit text-3xl">No result</h2>
@@ -55,7 +62,7 @@
                   {% if users %}
                      <div class="border-gray-light border-b pb-10">
                         <h2 class="mb-5 text-2xl font-semibold">People:</h2>
-                        <ul class="max-h-100 space-y-7 overflow-y-auto">
+                        <ul class="max-h-100 space-y-7 overflow-y-auto pb-1">
                            {% partialdef users inline %}
                               {% for user in users %}
                                  <li class="mx-auto flex items-center justify-between">
@@ -65,18 +72,20 @@
                                        show-bio
                                        extra-classes="w-3/4 overflow-hidden"
                                     />
-                                    {% include "interaction/follow.html" with user_to_follow_id=user.id %}
+                                    {% include "interaction/follow.html" with user_to_follow_id=user.id is_followed=user.is_followed %}
                                  </li>
                                  {% if forloop.last and users.has_next %}
                                     <template
                                        hx-get="{% url 'blog:search' partial='users' %}?{{ GET_params_str }}&page={{ users.next_page_number }}&snapshot={{ snapshot }}"
                                        hx-trigger="revealed"
                                        hx-swap="afterend"
+                                       hx-indicator="#people-loader"
                                     >
                                     </template>
                                  {% endif %}
                               {% endfor %}
                            {% endpartialdef users %}
+                           <c-loader id="people-loader" size="size-4" extra-classes="mt-2" />
                         </ul>
                      </div>
                   {% endif %}
@@ -84,7 +93,7 @@
                   {% if blogs %}
                      <div class="mt-10">
                         <h2 class="mb-5 text-2xl font-semibold">Posts:</h2>
-                        <ul class="space-y-7 overflow-y-auto">
+                        <ul class="space-y-7">
                            {% partialdef blogs inline %}
                               {% for blog in blogs %}
                                  <c-blog-card :blog="blog" />
@@ -93,10 +102,12 @@
                                        hx-get="{% url 'blog:search' partial='blogs' %}?{{ GET_params_str }}&page={{ blogs.next_page_number }}&snapshot={{ snapshot }}"
                                        hx-trigger="revealed"
                                        hx-swap="afterend"
+                                       hx-indicator="#blogs-loader"
                                     ></template>
                                  {% endif %}
                               {% endfor %}
                            {% endpartialdef blogs %}
+                           <c-loader id="blogs-loader" size="size-4" extra-classes="mt-2" />
                         </ul>
                      </div>
                   {% endif %}

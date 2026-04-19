@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 from django.conf import settings
 from django.db.models import Exists, OuterRef
 
@@ -72,6 +73,17 @@ class Blog(models.Model):
 
     def __str__(self):
         return self.title
+
+    def get_absolute_url(self):
+        return reverse(
+            "blog:detail",
+            kwargs={
+                "root_depth": 1,
+                "blog_id": self.id,
+                "comment_id": 0,
+                "partial": None,
+            },
+        )
 
 
 class BlogSection(models.Model):

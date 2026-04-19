@@ -1,5 +1,8 @@
 {% extends "layouts/main-layout.html" %}
+{% load static %}
+
 {% block title %}Home{% endblock title %}
+
 {% block body %}
    <!-- Left side bar -->
    {% block left_sidebar %}
@@ -23,12 +26,12 @@
                   />
                </form>
             </div>
-            <ul id="search-result" class="max-h-60 overflow-y-auto rounded-lg shadow-lg">
+            <ul id="search-result" class="max-h-50 overflow-y-auto rounded-lg shadow-lg">
                {% include "user/user-search.html" %}
             </ul>
          </div>
 
-         <div class="flex flex-col justify-between">
+         <div class="flex flex-col justify-between space-y-4">
             <a
                href="{% url 'blog:search' partial='content' %}"
                hx-target="#content"
@@ -38,35 +41,37 @@
                <i class="fa-solid fa-magnifying-glass mr-2"></i>Advanced search
             </a>
             <a
-               href="{% url 'user:profile' user_id=request.user.id partial=None %}?tab=saved"
+               href="{{ request.user.get_absolute_url }}?tab=saved"
                class="hover:bg-gray-light rounded-lg p-2 text-lg font-bold"
             >
                <i class="fa-solid fa-bookmark mr-2"></i>Saved posts
             </a>
             <a
-               href="{% url 'user:profile' user_id=request.user.id partial=None %}?tab=people"
+               href="{{ request.user.get_absolute_url }}?tab=people"
                class="hover:bg-gray-light rounded-lg p-2 text-lg font-bold"
             >
                <i class="fa-solid fa-people-group mr-2"></i>People
             </a>
             <a
-               href="{% url 'user:profile' user_id=request.user.id partial=None %}"
+               href="{{ request.user.get_absolute_url }}"
                class="hover:bg-gray-light flex items-center rounded-lg p-2 text-lg font-bold"
             >
                <i class="fa-solid fa-user mr-2"></i>Profile
             </a>
          </div>
 
-         <div class="log-out flex flex-col">
-            <a
-               hx-headers='{"x-csrftoken": "{{ csrf_token }}"}'
-               hx-post="{% url "user:sign-out" %}"
-               hx-target="body"
-               hx-push-url="true"
-               class="hover:bg-gray-light cursor-pointer rounded-lg p-2 text-lg font-bold text-red-700"
-            >
-               <i class="fa-solid fa-arrow-right-from-bracket mr-2"></i>Log out</a
-            >
+         <div class="grow">
+            {% comment %}
+               <a
+                  hx-headers='{"x-csrftoken": "{{ csrf_token }}"}'
+                  hx-post="{% url "user:sign-out" %}"
+                  hx-target="body"
+                  hx-push-url="true"
+                  class="hover:bg-gray-light cursor-pointer rounded-lg p-2 text-lg font-bold text-red-700"
+               >
+                  <i class="fa-solid fa-arrow-right-from-bracket mr-2"></i>Log out</a
+               >
+            {% endcomment %}
          </div>
       </div>
    {% endblock left_sidebar %}
@@ -82,80 +87,44 @@
       <div
          class="right-sidebar h-content border-gray-light fixed top-14 right-0 flex w-2/10 flex-col justify-between border-l p-3"
       >
-         <div class="ads h-60">
-            <div class="ad">
-               <h1 class="text-xl font-bold">Some ad</h1>
+         <div>
+            <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" target="_blank" class="block">
+               <h2 class="text-xl font-bold">Some ad</h2>
                <img
                   class="rounded-lg"
-                  src="https://images.pexels.com/photos/1563356/pexels-photo-1563356.jpeg?cs=srgb&dl=pexels-thatguycraig000-1563356.jpg&fm=jpg"
-                  alt=""
+                  src="{% static 'img/ad_img.jpg' %}"
+                  alt="Advertisement image"
                />
-            </div>
+            </a>
          </div>
 
-         <div class="followers min-h-40">
-            <h1 class="px-2">Your top followers:</h1>
+         <div class="min-h-40">
+            <h3 class="ml-1">Your top followings:</h3>
             <ul class="max-h-35 overflow-y-auto" role="list">
-               <li class="p-1">
-                  <a href="" class="hover:bg-gray-light flex rounded-lg p-1">
-                     <img
-                        class="border-gray-base h-10 w-10 rounded-full border"
-                        src="https://cdn.pixabay.com/photo/2024/05/26/10/15/bird-8788491_1280.jpg"
-                        alt=""
+               {% for following in top_followings %}
+                  <li class="mt-3">
+                     <c-user-card
+                        :user="following"
+                        img-size="h-10 w-10"
+                        extra-classes="w-full overflow-hidden"
                      />
-                     <div class="ml-3 overflow-hidden">
-                        <p class="text-sm font-medium text-black">Full name</p>
-                        <p class="text-gray-dark truncate text-sm">Username</p>
-                     </div>
-                  </a>
-               </li>
-
-               <li class="p-1">
-                  <a href="" class="hover:bg-gray-light flex rounded-lg p-1">
-                     <img
-                        class="border-gray-base h-10 w-10 rounded-full border"
-                        src="https://cdn.pixabay.com/photo/2024/05/26/10/15/bird-8788491_1280.jpg"
-                        alt=""
-                     />
-                     <div class="ml-3 overflow-hidden">
-                        <p class="text-sm font-medium text-black">Full name</p>
-                        <p class="text-gray-dark truncate text-sm">Username</p>
-                     </div>
-                  </a>
-               </li>
+                  </li>
+               {% endfor %}
             </ul>
          </div>
 
-         <div class="followings min-h-40">
-            <h1 class="px-2">Your top followings:</h1>
+         <div class="mb-10 min-h-40">
+            <h3 class="ml-1">Your top followers:</h3>
             <ul class="max-h-35 overflow-y-auto" role="list">
-               <li class="p-1">
-                  <a href="" class="hover:bg-gray-light flex rounded-lg p-1">
-                     <img
-                        class="border-gray-base h-10 w-10 rounded-full border"
-                        src="https://cdn.pixabay.com/photo/2024/05/26/10/15/bird-8788491_1280.jpg"
-                        alt=""
+               {% for follower in top_followers %}
+                  <li class="mt-3">
+                     <c-user-card
+                        :user="follower"
+                        img-size="h-10 w-10"
+                        extra-classes="w-full overflow-hidden"
                      />
-                     <div class="ml-3 overflow-hidden">
-                        <p class="text-sm font-medium text-black">Full name</p>
-                        <p class="text-gray-dark truncate text-sm">Username</p>
-                     </div>
-                  </a>
-               </li>
-
-               <li class="p-1">
-                  <a href="" class="hover:bg-gray-light flex rounded-lg p-1">
-                     <img
-                        class="border-gray-base h-10 w-10 rounded-full border"
-                        src="https://cdn.pixabay.com/photo/2024/05/26/10/15/bird-8788491_1280.jpg"
-                        alt=""
-                     />
-                     <div class="ml-3 overflow-hidden">
-                        <p class="text-sm font-medium text-black">Full name</p>
-                        <p class="text-gray-dark truncate text-sm">Username</p>
-                     </div>
-                  </a>
-               </li>
+                  </li>
+               {% endfor %}
             </ul>
          </div>
       </div>

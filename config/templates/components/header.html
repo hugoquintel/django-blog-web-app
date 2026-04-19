@@ -5,9 +5,9 @@
 >
    <a
       {% if request.user.is_authenticated %}
-         href="{% url "blog:index" partial='None' %}"
+         href="{% url "blog:index" partial=None %}"
       {% else %}
-         href="#"
+         href="{% url "user:sign-in" partial=None %}"
       {% endif %}
       class="hover:text-theme-base cursor-pointer font-light"
    >
@@ -20,7 +20,12 @@
       <div class="font-light">Sign in to tell your stories</div>
    {% endif %}
 
-   <div class="flex items-center space-x-3">
+   <div
+      x-data="{hideNotisDropDown: true, 
+               showUserDropDown: false, 
+               notiCountEl: $refs.notiCount}"
+      class="flex items-center space-x-3"
+   >
       {% if request.user.is_authenticated %}
          <a
             href="{% url "blog:create" partial=None %}"
@@ -28,18 +33,110 @@
          >
             <i class="fa-regular fa-pen-to-square"></i>Write
          </a>
-         <button class="hover:text-theme-base cursor-pointer">
-            <i class="fa-regular fa-bell"></i>
-         </button>
-         <img
-            class="profile-btn hover:text-theme-base h-9 w-9 cursor-pointer rounded-full border-2"
-            {% if request.user.picture %}
-               src="{{ request.user.picture.url }}"
-            {% else %}
-               src= {% static "img/stock_pfp.jpg" %}
-            {% endif %}
-            alt="Profile picture"
-         />
+         <div class="relative">
+            <button
+               @click.stop="hideNotisDropDown = !hideNotisDropDown; showUserDropDown = false; if (notiCountEl) notiCountEl.remove()"
+               class="group relative cursor-pointer"
+            >
+               {% if unseen_notis_num %}
+                  {% if unseen_notis_num < 10 %}
+                     <div
+                        x-ref="notiCount"
+                        class="text-theme-dark absolute -top-1 -right-1 flex size-4 items-center justify-center rounded-full bg-red-300 text-xs font-extrabold"
+                     >
+                        {{ unseen_notis_num }}
+                     </div>
+                  {% else %}
+                     <div
+                        x-ref="notiCount"
+                        class="text-theme-dark absolute -top-1 -right-1 flex size-4 items-center justify-center rounded-full bg-red-300 text-[0.5rem] font-extrabold"
+                     >
+                        10+
+                     </div>
+                  {% endif %}
+               {% endif %}
+               <i class="fa-regular fa-bell group-hover:text-theme-base"></i>
+            </button>
+            <ul
+               id="notifications"
+               @click.outside="hideNotisDropDown = true"
+               :class="{ 'hidden': hideNotisDropDown }"
+               class="border-gray-light bg-off-white absolute right-0 left-auto mt-3 hidden max-h-80 w-max max-w-120 min-w-60 space-y-3 overflow-y-auto rounded-sm border p-2 text-base font-semibold text-black shadow-lg"
+            >
+               {% partialdef notifications inline %}
+                  <li class="border-gray-light flex justify-between border-b pb-2 font-bold">
+                     <a
+                        hx-headers='{"x-csrftoken": "{{ csrf_token }}"}'
+                        hx-post="{% url 'notification:seen-redirect' noti_id=0 %}"
+                        hx-target="#notifications"
+                        class="cursor-pointer hover:underline"
+                     >
+                        Mark all as seen
+                     </a>
+                     <a
+                        hx-headers='{"x-csrftoken": "{{ csrf_token }}"}'
+                        hx-post="{% url 'notification:delete' noti_id=0 %}"
+                        hx-target="#notifications"
+                        class="cursor-pointer hover:underline"
+                     >
+                        Delete all
+                     </a>
+                  </li>
+                  {% if notifications %}
+                     {% for notification in notifications %}
+                        {% include "notification/notification.html" with notification=notification %}
+                     {% endfor %}
+                  {% else %}
+                     <li class="mx-auto w-fit text-lg font-bold">There is no notification</li>
+                  {% endif %}
+               {% endpartialdef notifications %}
+            </ul>
+         </div>
+         <div class="relative flex items-center">
+            <button @click="showUserDropDown = !showUserDropDown" class="group cursor-pointer">
+               <img
+                  class="group-hover:text-theme-base h-9 w-9 rounded-full border-2"
+                  {% if request.user.picture %}
+                     src="{{ request.user.picture.url }}"
+                  {% else %}
+                     src= {% static "img/stock_pfp.jpg" %}
+                  {% endif %}
+                  alt="Profile picture"
+               />
+            </button>
+            <ul
+               x-show="showUserDropDown"
+               @click.outside="showUserDropDown = false"
+               class="border-gray-light bg-off-white absolute right-0 -bottom-2 translate-y-full rounded-sm border text-base font-semibold whitespace-nowrap text-black shadow-lg"
+            >
+               <li class="flex p-1">
+                  <h2 class="border-gray-light w-full border-b px-1.5 py-1 font-bold">
+                     {{ request.user }}
+                  </h2>
+               </li>
+               <li class="flex p-1">
+                  <a
+                     href="{% url 'user:edit-profile' partial=None %}"
+                     class="hover:bg-gray-light flex cursor-pointer items-center justify-between rounded-sm px-1.5 py-1"
+                  >
+                     <p>Edit profile</p>
+                     <i class="fa-solid fa-pen ml-1 text-sm"></i>
+                  </a>
+               </li>
+               <li class="p-1 text-red-500">
+                  <a
+                     hx-headers='{"x-csrftoken": "{{ csrf_token }}"}'
+                     hx-post="{% url "user:sign-out" %}"
+                     hx-target="body"
+                     hx-push-url="true"
+                     class="hover:bg-gray-light flex cursor-pointer items-center justify-between rounded-sm px-1.5 py-1"
+                  >
+                     <p>Log out</p>
+                     <i class="fa-solid fa-arrow-right-from-bracket ml-1"></i>
+                  </a>
+               </li>
+            </ul>
+         </div>
       {% endif %}
    </div>
 </div>
