@@ -28,7 +28,9 @@ def notifications(request):
         curr_user_notifications = request.user.received_notifications.select_related(
             "sender", "blog", "comment"
         )
-        context["notifications"] = curr_user_notifications
+        context["notifications"] = curr_user_notifications.order_by(
+            "-created_at", "-id"
+        )
         context["unseen_notis_num"] = curr_user_notifications.aggregate(
             result=Count("id", filter=Q(is_seen=False))
         )["result"]

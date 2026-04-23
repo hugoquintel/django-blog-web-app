@@ -7,7 +7,7 @@
       <div id="auth-form" class="bg-theme-light flex w-6/10 flex-col justify-center space-y-2 py-6">
          {% partialdef auth_form inline %}
             <c-page-title>Sign up</c-page-title>
-            <h1 class="mb-6 text-3xl font-extrabold">Create an account</h1>
+            <h1 class="mb-5 text-3xl font-extrabold">Create an account</h1>
             <form
                method="post"
                action="{% url "user:sign-up" partial="auth_form" %}"
@@ -23,25 +23,25 @@
                <c-user-input-field
                   :field="form.username"
                   label="Username:"
-                  extra-classes="mb-6"
+                  extra-classes="mb-5"
                   field-classes="w-full"
-                  error-classes="mb-2"
+                  error-classes="mb-2 w-fit px-2 py-1"
                />
 
                <c-user-input-field
                   :field="form.email"
                   label="Email:"
-                  extra-classes="mb-6"
+                  extra-classes="mb-5"
                   field-classes="w-full"
-                  error-classes="mb-2"
+                  error-classes="mb-2 w-fit px-2 py-1"
                />
 
                <c-user-input-field
                   :field="form.password"
                   label="Password:"
-                  extra-classes="mb-6"
+                  extra-classes="mb-5"
                   field-classes="w-full"
-                  error-classes="mb-2"
+                  error-classes="mb-2 w-fit px-2 py-1"
                   extra-attrs="::type = showPassword?'text'::'password' autocomplete = on"
                />
 
@@ -50,7 +50,7 @@
                   label="Re-type password:"
                   extra-classes="mb-2"
                   field-classes="w-full"
-                  error-classes="mb-2"
+                  error-classes="mb-2 w-fit px-2 py-1"
                   extra-attrs="::type = showPassword?'text'::'password' autocomplete = on"
                />
 

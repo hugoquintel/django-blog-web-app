@@ -1,10 +1,24 @@
 <div
-   x-data="{message: $el}"
+   x-data="{message: $el,
+            timeOut: null,
+            isDelete: false,
+            startTimeOut() {
+               this.timeOut = setTimeout(() => {
+                  this.isDelete = true;
+                  this.timeOut = setTimeout(() => {
+                  this.message.remove()
+                  }, 1000)
+               }, 4000)
+            }}"
+   :class="isDelete && 'animate-fadeOut'"
+   x-init="startTimeOut()"
+   @mouseenter="clearTimeout(timeOut); isDelete = false"
+   @mouseleave="startTimeOut()"
    class="{% if type == "success" %}
       bg-theme-base
    {% elif type == "error" %}
       bg-red-400 text-off-white
-   {% endif %} {{ extra_classes }} flex w-fit rounded-sm p-2 text-lg font-semibold shadow-sm"
+   {% endif %} {{ extra_classes }} relative flex rounded-sm font-semibold shadow-sm"
 >
    <p class="mr-4">{{ message }}</p>
    <span
@@ -13,4 +27,13 @@
    >
       <i class="fa-solid fa-xmark"></i>
    </span>
+
+   {% comment %}
+      <progress
+         max="100"
+         x-init="interval = setInterval(() => { $el.value += 1 }, (5000 / 100)); 
+              setTimeout(() => { isDelete = true }, 4000)"
+         class="[&::-webkit-progress-bar]:bg-gray-base [&::-webkit-progress-value]:bg-theme-dark absolute bottom-0 left-0 h-1 w-full rounded-full [&::-webkit-progress-bar]:rounded-b-sm [&::-webkit-progress-value]:rounded-b-sm"
+      ></progress>
+   {% endcomment %}
 </div>

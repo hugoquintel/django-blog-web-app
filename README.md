@@ -8,7 +8,6 @@ This is the first stage of devlopment
 - fix prettier
 - add margin bottom for each page to leave some space at the end
 - pin every packages
-- allow user to turn off notifications in settings
 - modify the save method of each model to count likes, blogs
 
 

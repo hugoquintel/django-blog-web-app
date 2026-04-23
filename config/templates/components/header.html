@@ -110,9 +110,12 @@
                class="border-gray-light bg-off-white absolute right-0 -bottom-2 translate-y-full rounded-sm border text-base font-semibold whitespace-nowrap text-black shadow-lg"
             >
                <li class="flex p-1">
-                  <h2 class="border-gray-light w-full border-b px-1.5 py-1 font-bold">
+                  <a
+                     href="{{ request.user.get_absolute_url }}"
+                     class="border-gray-light w-full cursor-pointer border-b px-1.5 py-1 font-bold"
+                  >
                      {{ request.user }}
-                  </h2>
+                  </a>
                </li>
                <li class="flex p-1">
                   <a

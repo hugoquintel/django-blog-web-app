@@ -1,7 +1,7 @@
 from django.db import models
 from django.conf import settings
 from treebeard.mp_tree import MP_Node, MP_NodeQuerySet, MP_NodeManager
-from django.db.models import Q, CheckConstraint, UniqueConstraint, Exists, OuterRef
+from django.db.models import Q, F, CheckConstraint, UniqueConstraint, Exists, OuterRef
 
 from config.manager import QuerySetMixin
 
@@ -66,3 +66,15 @@ class Like(models.Model):
                 for field in ("blog", "comment")
             ],
         ]
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        instance = self.blog or self.comment
+        instance.like_count = F("like_count") + 1
+        instance.save(update_fields=["like_count"])
+
+    def delete(self, *args, **kwargs):
+        instance = self.blog or self.comment
+        super().delete(*args, **kwargs)
+        instance.like_count = F("like_count") - 1
+        instance.save(update_fields=["like_count"])

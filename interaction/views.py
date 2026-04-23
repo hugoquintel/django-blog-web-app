@@ -1,3 +1,4 @@
+from django.db.models import F
 from django.http import Http404
 from django.urls import reverse_lazy
 from django.core.exceptions import PermissionDenied
@@ -31,8 +32,7 @@ def like_view(request, instance_model, instance_id):
     except Like.DoesNotExist:
         Like.objects.create(**params)
         context["is_liked"] = True
-    instance.like_count = instance.liked_by.count()
-    instance.save(update_fields=["like_count"])
+    instance.refresh_from_db()
     context["instance"] = instance
     return render(request, "interaction/like.html#like", context)
 
@@ -67,10 +67,6 @@ def follow_view(request, user_to_follow_id):
     except Follow.DoesNotExist:
         Follow.objects.create(follower=current_user, following=user_to_follow)
         context["is_followed"] = True
-    current_user.following_count = current_user.followings.count()
-    user_to_follow.follower_count = user_to_follow.followers.count()
-    current_user.save(update_fields=["following_count"])
-    user_to_follow.save(update_fields=["follower_count"])
     return render(request, "interaction/follow.html#follow", context)
 
 

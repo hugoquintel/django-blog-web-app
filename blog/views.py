@@ -1,5 +1,4 @@
 from pathlib import Path
-from django.urls import reverse
 from django.conf import settings
 from django.http import HttpResponse
 from django.db.models import F, Value
@@ -125,8 +124,6 @@ def create_edit_view(request, blog_id=None, partial=None):
                 create_defaults={"user": user, **form_blog.cleaned_data},
             )
             if created:
-                user.blog_count = user.blogs.count()
-                user.save(update_fields=["blog_count"])
                 formset_blog_sections.instance = blog
             formset_blog_sections.save()
             section_with_picture = blog.sections.exclude(picture__exact="").first()
@@ -159,13 +156,8 @@ def delete_view(request, blog_id):
         raise PermissionDenied()
     blog_folder = Path(settings.MEDIA_ROOT) / blog.user.username / f"blog_{blog.id}"
     blog.delete()
-    try:
+    if blog_folder.exists():
         blog_folder.rmdir()
-    except (FileNotFoundError, OSError) as e:
-        print(f"Error: {e}")
-
-    user.blog_count = user.blogs.count()
-    user.save(update_fields=["blog_count"])
     return redirect("blog:index", partial="content")
 
 

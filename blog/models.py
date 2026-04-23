@@ -1,7 +1,7 @@
 from django.db import models
 from django.urls import reverse
 from django.conf import settings
-from django.db.models import Exists, OuterRef
+from django.db.models import F, Exists, OuterRef
 
 from interaction.models import Like
 from config.manager import QuerySetMixin
@@ -84,6 +84,20 @@ class Blog(models.Model):
                 "partial": None,
             },
         )
+
+    def save(self, *args, **kwargs):
+        is_added = self._state.adding
+        super().save(*args, **kwargs)
+        if is_added:
+            user = self.user
+            user.blog_count = F("blog_count") + 1
+            user.save(update_fields=["blog_count"])
+
+    def delete(self, *args, **kwargs):
+        user = self.user
+        super().delete(*args, **kwargs)
+        user.blog_count = F("blog_count") - 1
+        user.save(update_fields=["blog_count"])
 
 
 class BlogSection(models.Model):

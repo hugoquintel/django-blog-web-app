@@ -4,7 +4,59 @@
    {% partialdef profile_content inline %}
       <c-page-title>{{ title }}</c-page-title>
       <div class="w-8/10 space-y-10">
-         <h1>NOTHING YET</h1>
+         <div class="w-1/2">
+            <h2 class="text-theme-base mb-5 text-xl font-bold">Change password</h2>
+            <form
+               method="post"
+               action="{% url "user:profile" user_id=user.id partial=None %}?tab=settings"
+               x-data="{showPassword: false}"
+               hx-target="this"
+               hx-push-url="false"
+               class="space-y-5"
+            >
+               {% partialdef change_password_form inline %}
+                  {% csrf_token %}
+                  <c-user-input-field
+                     :field="form.old_password"
+                     label="Current password:"
+                     field-classes="float-right w-1/2"
+                     error-classes="mb-2 w-fit px-2 py-1"
+                     extra-attrs="::type = showPassword?'text'::'password' autocomplete = on"
+                  />
+                  <c-user-input-field
+                     :field="form.new_password"
+                     label="New password:"
+                     field-classes="float-right w-1/2"
+                     error-classes="mb-2 w-fit px-2 py-1"
+                     extra-attrs="::type = showPassword?'text'::'password' autocomplete = off"
+                  />
+                  <c-user-input-field
+                     :field="form.confirm_password"
+                     label="Confirm new password:"
+                     field-classes="float-right w-1/2"
+                     error-classes="mb-2 w-fit px-2 py-1"
+                     extra-attrs="::type = showPassword?'text'::'password' autocomplete = off"
+                  />
+
+                  <div class="flex w-full justify-between">
+                     <c-button
+                        type="submit"
+                        bg-color="bg-theme-base"
+                        text-color="text-white"
+                        font-size="text-base"
+                        padding="px-3 py-1.5"
+                     >
+                        Save
+                     </c-button>
+
+                     <div class="flex items-center space-x-1 text-sm">
+                        <input id="show-password" type="checkbox" x-model="showPassword" />
+                        <label for="show-password" class="select-none">show password</label>
+                     </div>
+                  </div>
+               {% endpartialdef change_password_form %}
+            </form>
+         </div>
       </div>
    {% endpartialdef profile_content %}
 {% endblock profile_content %}

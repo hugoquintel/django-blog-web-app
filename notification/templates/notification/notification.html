@@ -11,6 +11,7 @@
    hx-headers='{"x-csrftoken": "{{ csrf_token }}"}'
    hx-post="{% url 'notification:seen-redirect' noti_id=notification.id %}"
    hx-target="body"
+   hx-push-url="true"
 >
    {% csrf_token %}
    <button
@@ -29,6 +30,7 @@
             hx-post="{% url 'notification:update' noti_id=notification.id %}"
             hx-target="#notification-{{ notification.id }}"
             hx-swap="outerHTML"
+            hx-push-url="false"
             class="hover:bg-gray-light mb-1 rounded-sm p-1"
          >
             {% if notification.is_seen %}
@@ -42,6 +44,7 @@
             hx-post="{% url 'notification:delete' noti_id=notification.id %}"
             hx-target="#notification-{{ notification.id }}"
             hx-swap="delete"
+            hx-push-url="false"
             class="hover:bg-gray-light w-full rounded-sm p-1"
          >
             Delete
@@ -64,12 +67,12 @@
       {% elif notification.notification_type == 'blog_post' %}
          <p>
             <span class="font-bold">{{ notification.sender }}</span> posted
-            <span class="font-bold">{{ notification.blog }}</span>
+            <span class="font-bold">{{ notification.blog|truncatechars:30 }}</span>
          </p>
       {% elif notification.notification_type == 'blog_like' %}
          <p>
             <span class="font-bold">{{ notification.sender }}</span> liked your post
-            <span class="font-bold">{{ notification.blog }}</span>
+            <span class="font-bold">{{ notification.blog|truncatechars:30 }}</span>
          </p>
       {% elif notification.notification_type == 'comment_like' %}
          <p>
@@ -79,12 +82,12 @@
       {% elif notification.notification_type == 'comment_add' %}
          <p>
             <span class="font-bold">{{ notification.sender }}</span> commented
-            <span class="font-bold">{{ notification.comment }}</span> in your post
+            <span class="font-bold">{{ notification.comment|truncatechars:30 }}</span> in your post
          </p>
       {% elif notification.notification_type == 'comment_reply' %}
          <p>
             <span class="font-bold">{{ notification.sender }}</span> replied to you comment
-            <span class="font-bold">{{ notification.comment }}</span>
+            <span class="font-bold">{{ notification.comment|truncatechars:30 }}</span>
          </p>
       {% endif %}
       <p class="text-sm">{{ notification.created_at|date:"F d, Y" }}</p>

@@ -4,11 +4,11 @@ from django.http import HttpResponse
 from django.core.exceptions import PermissionDenied
 from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth import login, logout, authenticate
 from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth import login, logout, authenticate, update_session_auth_hash
 
-from user.forms import SigninForm, SignupForm, EditProfileForm
 from config.utils import User, sign_in_url, paginate_and_get_page, get_snapshot
+from user.forms import SigninForm, SignupForm, EditProfileForm, ChangePasswordForm
 
 
 # Create your views here.
@@ -120,33 +120,42 @@ def profile_view(request, user_id, partial="None"):
     blogs = None
 
     title = f"{user} profile"
-    match current_tab:
-        case "saved":
-            if user != request.user:
-                raise PermissionDenied()
-            template = "profile/profile-posts.html"
-            blogs = user.saved_blogs
-            context["title"] = f"{title} - saved blogs"
-        case "people":
-            template = "profile/profile-people.html"
-            followings, followers = (
-                user.followings.with_is_followed(user=request.user).order_by("id"),
-                user.followers.with_is_followed(user=request.user).order_by("id"),
-            )
-            context["followings"], context["followers"] = (
-                paginate_and_get_page(followings, page),
-                paginate_and_get_page(followers, page),
-            )
-            context["title"] = f"{title} - people"
-        case "settings":
-            if user != request.user:
-                raise PermissionDenied()
-            template = "profile/profile-settings.html"
-            context["title"] = f"{title} - settings"
-        case _:
-            template = "profile/profile-posts.html"
-            blogs = user.blogs
-            context["title"] = f"{title} - blogs"
+    if current_tab == "saved":
+        if user != request.user:
+            raise PermissionDenied()
+        template = "profile/profile-posts.html"
+        blogs = user.saved_blogs
+        context["title"] = f"{title} - saved blogs"
+    elif current_tab == "people":
+        template = "profile/profile-people.html"
+        followings, followers = (
+            user.followings.with_is_followed(user=request.user).order_by("id"),
+            user.followers.with_is_followed(user=request.user).order_by("id"),
+        )
+        context["followings"], context["followers"] = (
+            paginate_and_get_page(followings, page),
+            paginate_and_get_page(followers, page),
+        )
+        context["title"] = f"{title} - people"
+    elif current_tab == "settings":
+        if user != request.user:
+            raise PermissionDenied()
+        template = "profile/profile-settings.html"
+        if request.method == "POST":
+            partial = "change_password_form"
+            form = ChangePasswordForm(request.POST, user=request.user)
+            if form.is_valid():
+                new_password = form.cleaned_data.get("new_password")
+                user.set_password(new_password)
+                user.save(update_fields=["password"])
+                update_session_auth_hash(request, user)
+        else:
+            form = ChangePasswordForm(user=request.user)
+        context["form"] = form
+    else:
+        template = "profile/profile-posts.html"
+        blogs = user.blogs
+        context["title"] = f"{title} - blogs"
 
     if blogs:
         blogs = blogs.with_is_liked_and_saved(user=user).order_by("-created_at", "-id")

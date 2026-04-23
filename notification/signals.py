@@ -59,7 +59,7 @@ def send_notification(sender, instance, created, **kwargs):
                 values["receiver"] = instance.blog.user
                 values["notification_type"] = "comment_add"
             else:
-                values["receiver"] = instance.get_paren().user
+                values["receiver"] = instance.get_parent().user
                 values["notification_type"] = "comment_reply"
             if values["receiver"] == values["sender"]:
                 return

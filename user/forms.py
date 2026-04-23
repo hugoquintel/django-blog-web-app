@@ -1,12 +1,11 @@
 from django import forms
-from django.contrib.auth import get_user_model
+
+from config.utils import User
 from user.validators import (
     signin_validators,
     signup_validators,
     edit_profile_validators,
 )
-
-User = get_user_model()
 
 
 # Form for signing in
@@ -142,3 +141,32 @@ class EditProfileForm(forms.ModelForm):
     def clean_birthday(self):
         birthday = self.cleaned_data.get("birthday")
         return None if birthday == "" else birthday
+
+
+class ChangePasswordForm(forms.Form):
+    old_password = forms.CharField(widget=forms.PasswordInput())
+    new_password = forms.CharField(
+        validators=signup_validators["password"], widget=forms.PasswordInput()
+    )
+    confirm_password = forms.CharField(widget=forms.PasswordInput())
+
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop("user", None)
+        super().__init__(*args, **kwargs)
+        for field in self.fields:
+            self.fields[f"{field}"].required = True
+            self.fields[f"{field}"].widget.attrs[
+                "class"
+            ] = "rounded-sm border px-2 py-1 focus:outline-0"
+
+    def clean(self):
+        cleaned_data = super().clean()
+        user = self.user
+        old_password = cleaned_data.get("old_password")
+        new_password = cleaned_data.get("new_password")
+        confirm_password = self.cleaned_data.get("confirm_password")
+        if not user.check_password(old_password):
+            self.add_error("old_password", "The password you entered is incorrect.")
+        if new_password != confirm_password:
+            self.add_error("new_password", "The passwords you entered don't match.")
+        return cleaned_data

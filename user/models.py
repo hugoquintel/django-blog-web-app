@@ -1,7 +1,6 @@
 from django.db import models
 from django.urls import reverse
-from django.db.models import UniqueConstraint
-from django.db.models import Exists, OuterRef
+from django.db.models import F, UniqueConstraint, Exists, OuterRef
 from django.contrib.auth.models import AbstractUser, UserManager
 
 from config.manager import QuerySetMixin
@@ -70,3 +69,19 @@ class Follow(models.Model):
                 name="unique_follow",
             )
         ]
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        follower, following = self.follower, self.following
+        follower.following_count = F("following_count") + 1
+        following.follower_count = F("follower_count") + 1
+        follower.save(update_fields=["following_count"])
+        following.save(update_fields=["follower_count"])
+
+    def delete(self, *args, **kwargs):
+        follower, following = self.follower, self.following
+        super().delete(*args, **kwargs)
+        follower.following_count = F("following_count") - 1
+        following.follower_count = F("follower_count") - 1
+        follower.save(update_fields=["following_count"])
+        following.save(update_fields=["follower_count"])

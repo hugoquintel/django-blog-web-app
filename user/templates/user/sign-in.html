@@ -7,7 +7,7 @@
       <div id="auth-form" class="bg-theme-light flex w-6/10 flex-col justify-center space-y-2 py-6">
          {% partialdef auth_form inline %}
             <c-page-title>Sign in</c-page-title>
-            <h1 class="mb-6 text-3xl font-extrabold">Sign in to your account</h1>
+            <h1 class="mb-5 text-3xl font-extrabold">Sign in to your account</h1>
             <form
                method="post"
                action="{% url "user:sign-in" partial="auth_form" %}"
@@ -21,16 +21,20 @@
                {% csrf_token %}
                {% if messages %}
                   {% for message in messages %}
-                     <c-message message="{{ message }}" type="success" extra-classes="mb-8 w-fit" />
+                     <c-message
+                        message="{{ message }}"
+                        type="success"
+                        extra-classes="mb-5 w-fit px-2 py-1"
+                     />
                   {% endfor %}
                {% endif %}
 
                <c-user-input-field
                   :field="form.username"
                   label="Username:"
-                  extra-classes="mb-6"
+                  extra-classes="mb-5"
                   field-classes="w-full"
-                  error-classes="mb-2"
+                  error-classes="mb-2 w-fit px-2 py-1"
                />
 
                <c-user-input-field
@@ -38,7 +42,7 @@
                   label="Password:"
                   extra-classes="mb-2"
                   field-classes="w-full"
-                  error-classes="mb-2"
+                  error-classes="mb-2 w-fit px-2 py-1"
                   extra-attrs="::type = showPassword?'text'::'password' autocomplete = on"
                />
 
