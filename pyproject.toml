@@ -6,10 +6,10 @@ readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "alt-profanity-check>=1.7.2",
-    "django==6.0",
+    "django>=6.0",
     "django-cleanup>=9.0.0",
-    "django-cotton==2.6.1",
-    "django-htmx==1.27.0",
+    "django-cotton>=2.6.1",
+    "django-htmx>=1.27.0",
     "django-treebeard>=4.8.0",
     "django-widget-tweaks>=1.5.1",
     "environs[django]>=14.5.0",
@@ -18,6 +18,4 @@ dependencies = [
 ]
 
 [dependency-groups]
-dev = [
-    "django-debug-toolbar==6.2.0",
-]
+dev = ["django-debug-toolbar>=6.2.0"]
